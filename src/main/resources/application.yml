@@ -3,3 +3,20 @@
 spring:
   profiles:
     active: dev
+
+  jpa:
+    # OSIV - Open Session In View
+    # Session 은 Hibernate 의 Session 객체이며, Session 객체는 영속성 컨텍스트를 포함합니다.
+    #
+    # OSIV 를 사용하지 않을 경우 (Service -> Repository)
+    # Session 과 DB Connection 의 지속기 간은 Transaction 과 동일합니다.
+    #
+    # OSIV 를 사용할 경우 (Filter Interceptor -> Controller -> Service -> Repository)
+    # Session 과 DB Connection 은 View 렌더링이 끝나는 시점까지 지속됩니다.
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
