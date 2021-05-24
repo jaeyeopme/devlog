@@ -1,0 +1,5 @@
+# 공통
+
+spring:
+  profiles:
+    active: dev
