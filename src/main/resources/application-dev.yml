@@ -6,3 +6,5 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
 
+  devtools:
+    add-properties: false
