@@ -10,4 +10,9 @@ public class GeneralMemberService implements MemberService {
 
     private final MemberRepository memberRepository;
 
+    @Override
+    public boolean isDuplicatedEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
 }
