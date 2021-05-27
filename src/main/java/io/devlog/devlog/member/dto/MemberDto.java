@@ -8,6 +8,10 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+/**
+ * ObjectMapper 는 @RequestBody 가 Property 로 구현되어 있을때 Getter 나 Setter 로 필드명을 매칭하며 reflection 을 사용해서 값을 주입합니다.
+ * Property 로 구현되지 않았거나 생성을 위임한 경우가 아니라면 기본 생성자로 생성됩니다.
+ */
 @Getter
 @Builder
 @AllArgsConstructor
