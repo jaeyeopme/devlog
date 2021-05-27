@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static io.devlog.devlog.fixture.MemberFixture.MEMBER_REQUEST;
+import static io.devlog.devlog.fixture.MemberFixture.MEMBER_REGISTRATION_REQUEST;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,7 +28,7 @@ class GeneralMemberServiceTest {
     void isDuplicatedEmail_Duplicated_False() {
         when(memberRepository.existsByEmail(any())).thenReturn(false);
 
-        assertFalse(generalMemberService.isDuplicatedEmail(MEMBER_REQUEST.getEmail()));
+        assertFalse(generalMemberService.isDuplicatedEmail(MEMBER_REGISTRATION_REQUEST.getEmail()));
     }
 
     @DisplayName("중복된 이메일이 있을 경우 TRUE 를 반환한다.")
@@ -36,7 +36,8 @@ class GeneralMemberServiceTest {
     void isDuplicatedEmail_NotDuplicated_True() {
         when(memberRepository.existsByEmail(any())).thenReturn(true);
 
-        assertTrue(generalMemberService.isDuplicatedEmail(MEMBER_REQUEST.getEmail()));
+        assertTrue(generalMemberService.isDuplicatedEmail(MEMBER_REGISTRATION_REQUEST.getEmail()));
     }
+
 
 }

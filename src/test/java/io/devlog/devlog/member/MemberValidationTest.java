@@ -25,9 +25,9 @@ public class MemberValidationTest {
     @Test
     void isNotValidEmail() {
         MemberDto memberDto = MemberDto.builder()
-                .email("test@email/com")
-                .password("Pass1234!")
-                .nickname("닉네임")
+                .email("member@email/com")
+                .password("Member1234!")
+                .nickname("member")
                 .build();
 
         Set<ConstraintViolation<MemberDto>> violations = validator.validate(memberDto);
@@ -41,9 +41,9 @@ public class MemberValidationTest {
     @Test
     void isNotValidPassword() {
         MemberDto memberDto = MemberDto.builder()
-                .email("test@email.com")
-                .password("pass1234!")
-                .nickname("닉네임")
+                .email("member@email.com")
+                .password("member1234!")
+                .nickname("member")
                 .build();
 
         Set<ConstraintViolation<MemberDto>> violations = validator.validate(memberDto);
