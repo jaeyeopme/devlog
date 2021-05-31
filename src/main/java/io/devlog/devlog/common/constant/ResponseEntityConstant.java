@@ -1,4 +1,4 @@
-package io.devlog.devlog.commons.constant;
+package io.devlog.devlog.common.constant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

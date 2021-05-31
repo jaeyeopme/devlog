@@ -1,6 +1,6 @@
-package io.devlog.devlog.member;
+package io.devlog.devlog.user;
 
-import io.devlog.devlog.member.dto.MemberDto;
+import io.devlog.devlog.user.dto.UserRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class MemberValidationTest {
+public class UserValidationTest {
 
     private Validator validator;
 
@@ -24,13 +24,13 @@ public class MemberValidationTest {
     @DisplayName("유효하지 않은 이메일 형식일 경우 유효성 검사에 실패한다.")
     @Test
     void isNotValidEmail() {
-        MemberDto memberDto = MemberDto.builder()
+        UserRequest userRequest = UserRequest.builder()
                 .email("member@email/com")
                 .password("Member1234!")
                 .nickname("member")
                 .build();
 
-        Set<ConstraintViolation<MemberDto>> violations = validator.validate(memberDto);
+        Set<ConstraintViolation<UserRequest>> violations = validator.validate(userRequest);
 
         assertThat(violations.size()).isEqualTo(1);
         assertThat(violations.iterator().next().getMessage())
@@ -40,13 +40,13 @@ public class MemberValidationTest {
     @DisplayName("유효하지 않은 비밀번호 형식일 경우 유효성 검사에 실패한다.")
     @Test
     void isNotValidPassword() {
-        MemberDto memberDto = MemberDto.builder()
+        UserRequest userRequest = UserRequest.builder()
                 .email("member@email.com")
                 .password("member1234!")
                 .nickname("member")
                 .build();
 
-        Set<ConstraintViolation<MemberDto>> violations = validator.validate(memberDto);
+        Set<ConstraintViolation<UserRequest>> violations = validator.validate(userRequest);
 
         assertThat(violations.size()).isEqualTo(1);
         assertThat(violations.iterator().next().getMessage())

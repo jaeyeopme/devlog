@@ -1,6 +1,6 @@
-package io.devlog.devlog.member.dto;
+package io.devlog.devlog.user.dto;
 
-import io.devlog.devlog.member.domain.entity.Member;
+import io.devlog.devlog.user.domain.entity.User;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -16,7 +16,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberDto {
+public class UserRequest {
 
     @NotBlank
     @Email(message = "유효하지 않은 이메일 형식입니다.",
@@ -31,11 +31,11 @@ public class MemberDto {
     @NotBlank
     private String nickname;
 
-    public static Member toEntity(MemberDto memberDto, PasswordEncoder passwordEncoder) {
-        return Member.builder()
-                .email(memberDto.getEmail())
-                .password(passwordEncoder.encode(memberDto.getPassword()))
-                .nickname(memberDto.getNickname())
+    public static User toEntity(UserRequest userRequest, PasswordEncoder passwordEncoder) {
+        return User.builder()
+                .email(userRequest.getEmail())
+                .password(passwordEncoder.encode(userRequest.getPassword()))
+                .nickname(userRequest.getNickname())
                 .build();
     }
 
