@@ -30,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .formLogin()
                 .usernameParameter("email")
+                .loginProcessingUrl(USER_API_URI + "/login")
                 .and()
                 .authorizeRequests()
                 .antMatchers(GET, USER_API_URI + "/duplicated/**")
