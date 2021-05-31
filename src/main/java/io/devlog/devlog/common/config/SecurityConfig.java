@@ -2,11 +2,15 @@ package io.devlog.devlog.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
+import static org.springframework.http.HttpMethod.GET;
 
 @EnableWebSecurity
 @Configuration
@@ -26,9 +30,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .formLogin()
                 .usernameParameter("email")
-                .loginPage("/login")
                 .and()
                 .authorizeRequests()
+                .antMatchers(GET, USER_API_URI + "/duplicated/**")
+                .permitAll()
+                .antMatchers(GET, USER_API_URI + "/verify-token/**")
+                .permitAll()
+                .antMatchers(HttpMethod.POST, USER_API_URI)
+                .permitAll()
                 .antMatchers("/", "/h2-console/**")
                 .permitAll()
                 .anyRequest()

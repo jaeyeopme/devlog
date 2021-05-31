@@ -5,18 +5,20 @@ import io.devlog.devlog.user.dto.UserRequest;
 
 public class UserFixture {
 
-    public static final User NEW_USER = User
+    public static final UserRequest USER_REQUEST = UserRequest
             .builder()
-            .email("newUser@email.com")
-            .password("newUser1234!")
-            .nickname("newUser")
+            .email("userRequest@email.com")
+            .password("userPass1234!")
+            .nickname("userRequest")
             .build();
 
-    public static final UserRequest USER_REGISTRATION_REQUEST = UserRequest
+    public static final User USER = User
             .builder()
-            .email("newUser@email.com")
-            .password("newUser1234!")
-            .nickname("newUser")
+            .email("user@email.com")
+            .password("userPass1234!")
+            .nickname("user")
             .build();
+
+    public static final String EMAIL_TOKEN = "emailToken";
 
 }

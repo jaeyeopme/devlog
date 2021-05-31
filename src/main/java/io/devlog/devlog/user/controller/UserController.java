@@ -26,7 +26,7 @@ public class UserController {
 
     public static final String USER_API_URI = "/api/users";
     private final UserService userService;
-    private final EmailVerificationService verificationService;
+    private final EmailVerificationService emailVerificationService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping
@@ -39,7 +39,7 @@ public class UserController {
         return RESPONSE_CREATED;
     }
 
-    @PostMapping("/duplicated/{email}")
+    @GetMapping("/duplicated/{email}")
     public ResponseEntity<HttpStatus> isDuplicatedEmail(@PathVariable String email) {
         if (userService.isDuplicatedEmail(email))
             throw DUPLICATED_EMAIL_EXCEPTION;
@@ -48,18 +48,20 @@ public class UserController {
     }
 
     @PostMapping("/email-verification")
-    public ResponseEntity<HttpStatus> sendVerificationEmail(@AuthenticationPrincipal User user) {
-        verificationService.sendEmail(user.getEmail());
+    public ResponseEntity<HttpStatus> sendEmailToken(@AuthenticationPrincipal User user) {
+        emailVerificationService.sendEmailToken(user.getEmail());
 
         return RESPONSE_OK;
     }
 
-    @GetMapping("/verify-email")
-    public ResponseEntity<HttpStatus> verifyEmail(@RequestParam String token) {
-        if (verificationService.isInvalidToken(token))
+    @GetMapping("/verify-token/{token}")
+    public ResponseEntity<HttpStatus> verifyEmailToken(@PathVariable String token) {
+        if (emailVerificationService.isInvalidToken(token))
             throw INVALID_TOKEN_EXCEPTION;
 
-        userService.setEnabled(verificationService.getVerifiedEmail(token));
+        String verifiedEmail = emailVerificationService.getVerifiedEmail(token);
+
+        userService.setEnabled(verifiedEmail);
 
         return RESPONSE_OK;
     }

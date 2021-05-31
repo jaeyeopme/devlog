@@ -33,9 +33,9 @@ public class UserRequest {
 
     public static User toEntity(UserRequest userRequest, PasswordEncoder passwordEncoder) {
         return User.builder()
-                .email(userRequest.getEmail())
-                .password(passwordEncoder.encode(userRequest.getPassword()))
-                .nickname(userRequest.getNickname())
+                .email(userRequest.email)
+                .password(passwordEncoder.encode(userRequest.password))
+                .nickname(userRequest.nickname)
                 .build();
     }
 
