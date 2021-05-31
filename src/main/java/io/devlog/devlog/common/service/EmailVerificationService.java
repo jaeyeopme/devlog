@@ -18,7 +18,7 @@ public class EmailVerificationService {
     private final EmailTokenService emailTokenService;
     private final JavaMailSender javaMailSender;
 
-    public void sendEmail(String email) {
+    public void sendEmailToken(String email) {
         String token = generateToken();
 
         saveToken(token, email);
