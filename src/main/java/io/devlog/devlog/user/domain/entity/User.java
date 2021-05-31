@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -42,6 +43,7 @@ public class User extends BaseTimeEntity {
 
     @Builder
     public User(String email, String password, String nickname) {
+        this.authorities = new HashSet<>();
         this.email = email;
         this.password = password;
         this.nickname = nickname;
