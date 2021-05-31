@@ -1,5 +1,6 @@
 package io.devlog.devlog.user.service;
 
+import io.devlog.devlog.user.domain.entity.Authority;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static io.devlog.devlog.user.exception.UserResponseStatusException.NOT_FOUND_USER_EXCEPTION;
+import static io.devlog.devlog.user.exception.UserResponseStatusException.USER_NOT_FOUND_EXCEPTION;
 
 @RequiredArgsConstructor
 @Service
@@ -25,6 +26,7 @@ public class GeneralUserService implements UserService {
     @Transactional
     @Override
     public void register(User user) {
+        user.getAuthorities().add(Authority.USER);
         userRepository.save(user);
     }
 
@@ -38,7 +40,7 @@ public class GeneralUserService implements UserService {
     @Override
     public void setEnabled(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> NOT_FOUND_USER_EXCEPTION);
+                .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
 
         User.setEnabled(user);
     }
