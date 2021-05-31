@@ -39,7 +39,8 @@ public class GeneralUserService implements UserService {
     public void setEnabled(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> NOT_FOUND_USER_EXCEPTION);
-        user.setEnabled(true);
+
+        User.setEnabled(user);
     }
 
 }
