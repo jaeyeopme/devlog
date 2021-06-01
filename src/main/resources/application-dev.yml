@@ -11,9 +11,14 @@ spring:
 
   redis:
     token:
-      host: ENC(XgFskmj0RIDPuqO/dBsuR14BlPixi9gH)
-      port: ENC(UCyEkGwkMsBgr3tsjA0jbQ==)
-      password: ENC(0NYDSvTobBO2yan5bcd3P5zmdUQ2EEL2)
+      host: ENC(wOE0C4t/QQZ1xQ2C+78CREq5wDLhNASC)
+      port: ENC(WA37eyHWagVJsRJUuQyo5A==)
+      password: ENC(M5a8/CUZrpchoR+uz9pj2BTPzvMHu7ZU)
+
+    session:
+      host: ENC(XfGxkVFSaG7hBakUenpnQedw8x2NABC0)
+      port: ENC(gL/w90O1H/m/NQ4nei8FPw==)
+      password: ENC(BlWoa+bOuRhpHMb5Sz1xLmiaaJ0fasvC)
 
   datasource:
     url: jdbc:h2:mem:devlog;DB_CLOSE_ON_EXIT=FALSE
@@ -33,16 +38,17 @@ spring:
         format_sql: true
 
   mail:
-    host: ENC(lCWkXu2730IXSJEYd98+r1dFtu0hnodh)
-    port: ENC(ucLR9dFcbyUTT8S8V5eWcw==)
+    host: smtp.gmail.com
+    port: 587
     username: ENC(TMLzCuf3oeMERcFoQnUBRepEAeap7EK0)
     password: ENC(9NFkMGtb4LUswKKnPQl27OZp/8MYc299wjiEwcK0xgk=)
-  properties:
-    mail:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
+    protocol: smtp
+    tls: true
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
+      ssl.trust: smtp.gmail.com
+
   h2:
     console:
       enabled: true
