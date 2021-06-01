@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static io.devlog.devlog.user.exception.UserResponseStatusException.USER_NOT_FOUND_EXCEPTION;
-
 @RequiredArgsConstructor
 @Service
 public class GeneralUserService implements UserService {
@@ -38,11 +36,8 @@ public class GeneralUserService implements UserService {
 
     @Transactional
     @Override
-    public void setEnabled(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
-
-        User.setEnabled(user);
+    public void setEnabledByEmail(String email) {
+        userRepository.setEnabledByEmail(email);
     }
 
 }
