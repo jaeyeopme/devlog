@@ -14,7 +14,7 @@ import static io.devlog.devlog.user.exception.UserResponseStatusException.USER_N
 
 @RequiredArgsConstructor
 @Service
-public class LoginService implements UserDetailsService {
+public class SessionLoginService implements UserDetailsService {
 
     private final UserRepository userRepository;
 

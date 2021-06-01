@@ -9,11 +9,11 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class TokenRedisUtils {
+public class TokenRedis {
 
     private final StringRedisTemplate tokenRedisTemplate;
 
-    public TokenRedisUtils(@Qualifier(value = "tokenTemplate") StringRedisTemplate tokenRedisTemplate) {
+    public TokenRedis(@Qualifier(value = "tokenRedisTemplate") StringRedisTemplate tokenRedisTemplate) {
         this.tokenRedisTemplate = tokenRedisTemplate;
     }
 
