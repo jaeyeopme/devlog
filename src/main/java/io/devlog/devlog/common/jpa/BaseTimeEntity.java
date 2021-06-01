@@ -26,11 +26,9 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTimeEntity {
 
-    @Column(updatable = false, nullable = false)
     @CreatedDate
     private LocalDateTime createdDate;
 
-    @Column(updatable = false, nullable = false)
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
