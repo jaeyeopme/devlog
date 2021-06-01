@@ -11,9 +11,9 @@ spring:
 
   redis:
     token:
-        host: ENC(XgFskmj0RIDPuqO/dBsuR14BlPixi9gH)
-        port: ENC(UCyEkGwkMsBgr3tsjA0jbQ==)
-        password: ENC(0NYDSvTobBO2yan5bcd3P5zmdUQ2EEL2)
+      host: ENC(XgFskmj0RIDPuqO/dBsuR14BlPixi9gH)
+      port: ENC(UCyEkGwkMsBgr3tsjA0jbQ==)
+      password: ENC(0NYDSvTobBO2yan5bcd3P5zmdUQ2EEL2)
 
   datasource:
     url: jdbc:h2:mem:devlog;DB_CLOSE_ON_EXIT=FALSE
@@ -38,11 +38,11 @@ spring:
     username: ENC(TMLzCuf3oeMERcFoQnUBRepEAeap7EK0)
     password: ENC(9NFkMGtb4LUswKKnPQl27OZp/8MYc299wjiEwcK0xgk=)
   properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
   h2:
     console:
       enabled: true

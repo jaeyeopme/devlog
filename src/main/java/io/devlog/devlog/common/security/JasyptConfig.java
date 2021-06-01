@@ -1,4 +1,4 @@
-package io.devlog.devlog.common.config;
+package io.devlog.devlog.common.security;
 
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;

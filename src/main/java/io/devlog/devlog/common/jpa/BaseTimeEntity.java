@@ -1,4 +1,4 @@
-package io.devlog.devlog.common.config;
+package io.devlog.devlog.common.jpa;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

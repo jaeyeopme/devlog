@@ -1,11 +1,10 @@
 package io.devlog.devlog.user.domain.entity;
 
-import io.devlog.devlog.common.config.BaseTimeEntity;
+import io.devlog.devlog.common.jpa.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -49,12 +48,12 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    private void setEnabled() {
-        this.enabled = true;
-    }
-
     public static void setEnabled(User user) {
         user.setEnabled();
+    }
+
+    private void setEnabled() {
+        this.enabled = true;
     }
 
 }

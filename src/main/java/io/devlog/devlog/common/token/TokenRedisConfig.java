@@ -1,4 +1,4 @@
-package io.devlog.devlog.common.config;
+package io.devlog.devlog.common.token;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +8,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
-public class TokenConfig {
+public class TokenRedisConfig {
 
     @Value("${spring.redis.token.host}")
     private String host;
@@ -28,7 +28,7 @@ public class TokenConfig {
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
-    @Bean
+    @Bean(name = "tokenTemplate")
     public StringRedisTemplate tokenRedisTemplate() {
         return new StringRedisTemplate(lettuceConnectionFactory());
     }

@@ -1,6 +1,6 @@
 package io.devlog.devlog.user.controller;
 
-import io.devlog.devlog.common.service.EmailVerificationService;
+import io.devlog.devlog.common.token.EmailTokenService;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRequest;
 import io.devlog.devlog.user.service.UserService;
@@ -26,7 +26,7 @@ public class UserController {
 
     public static final String USER_API_URI = "/api/users";
     private final UserService userService;
-    private final EmailVerificationService emailVerificationService;
+    private final EmailTokenService emailTokenService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping
@@ -49,19 +49,15 @@ public class UserController {
 
     @PostMapping("/email-verification")
     public ResponseEntity<HttpStatus> sendEmailToken(@AuthenticationPrincipal User user) {
-        emailVerificationService.sendEmailToken(user.getEmail());
+        emailTokenService.sendEmailToken(user.getEmail());
 
         return RESPONSE_OK;
     }
 
     @GetMapping("/verify-token/{token}")
     public ResponseEntity<HttpStatus> verifyEmailToken(@PathVariable String token) {
-        if (emailVerificationService.isInvalidToken(token))
-            throw INVALID_TOKEN_EXCEPTION;
-
-        String verifiedEmail = emailVerificationService.getVerifiedEmail(token);
-
-        userService.setEnabled(verifiedEmail);
+        String email = emailTokenService.getEmail(token).orElseThrow(() -> INVALID_TOKEN_EXCEPTION);
+        userService.setEnabled(email);
 
         return RESPONSE_OK;
     }

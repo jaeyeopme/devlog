@@ -9,5 +9,4 @@ public class UserResponseStatusException {
     public static ResponseStatusException INVALID_TOKEN_EXCEPTION = new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증토큰이 만료되었습니다.");
     public static ResponseStatusException USER_NOT_FOUND_EXCEPTION = new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
 
-
 }

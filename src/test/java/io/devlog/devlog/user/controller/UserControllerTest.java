@@ -2,7 +2,7 @@ package io.devlog.devlog.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.devlog.devlog.common.service.EmailVerificationService;
+import io.devlog.devlog.common.token.EmailTokenService;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRequest;
 import io.devlog.devlog.user.service.UserService;
@@ -20,17 +20,19 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static io.devlog.devlog.docs.ApiDocumentationUtil.getDocumentRequest;
 import static io.devlog.devlog.docs.ApiDocumentationUtil.getDocumentResponse;
 import static io.devlog.devlog.fixture.UserFixture.*;
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +46,7 @@ class UserControllerTest {
     UserService userService;
 
     @MockBean
-    EmailVerificationService emailVerificationService;
+    EmailTokenService emailTokenService;
 
     @MockBean
     PasswordEncoder passwordEncoder;
@@ -143,7 +145,7 @@ class UserControllerTest {
     @Test
     @DisplayName("이메일 토큰 검증 - 유효한 토큰이라면 인증에 성공한다.")
     void verifyEmailToken_Success() throws Exception {
-        given(emailVerificationService.isInvalidToken(EMAIL_TOKEN)).willReturn(false);
+        given(emailTokenService.getEmail(EMAIL_TOKEN)).willReturn(Optional.of(USER.getEmail()));
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(USER_API_URI + "/verify-token/{token}", EMAIL_TOKEN))
                 .andDo(print())
@@ -158,8 +160,7 @@ class UserControllerTest {
     @Test
     @DisplayName("이메일 토큰 검증 - 유효하지 않은 토큰이라면 인증에 실패한다.")
     void verifyEmailToken_Fail() throws Exception {
-
-        given(emailVerificationService.isInvalidToken(EMAIL_TOKEN)).willReturn(true);
+        given(emailTokenService.getEmail(EMAIL_TOKEN)).willReturn(Optional.empty());
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(USER_API_URI + "/verify-token/{token}", EMAIL_TOKEN))
                 .andDo(print())
