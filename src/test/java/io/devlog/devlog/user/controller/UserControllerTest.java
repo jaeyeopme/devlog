@@ -123,7 +123,7 @@ class UserControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
-                                parameterWithName("email").description("로그인시 사용할 사용자 이메일"))));
+                                parameterWithName("email").description("사용 가능한 이메일"))));
     }
 
     @Test
@@ -139,7 +139,7 @@ class UserControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
-                                parameterWithName("email").description("로그인시 사용할 사용자 이메일"))));
+                                parameterWithName("email").description("중복된 이메일"))));
     }
 
     @Test
@@ -154,7 +154,7 @@ class UserControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
-                                parameterWithName("token").description("이메일 인증에 사용할 토큰"))));
+                                parameterWithName("token").description("유효한 토큰"))));
     }
 
     @Test
@@ -170,7 +170,7 @@ class UserControllerTest {
                         getDocumentRequest(),
                         getDocumentResponse(),
                         pathParameters(
-                                parameterWithName("token").description("이메일 인증에 사용할 토큰"))));
+                                parameterWithName("token").description("유효하지 않은 토큰"))));
     }
 
 }

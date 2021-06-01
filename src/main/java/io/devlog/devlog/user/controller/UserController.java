@@ -35,6 +35,7 @@ public class UserController {
             throw DUPLICATED_EMAIL_EXCEPTION;
 
         userService.register(UserRequest.toEntity(userRequest, passwordEncoder));
+        emailTokenService.sendEmailToken(userRequest.getEmail());
 
         return RESPONSE_CREATED;
     }
@@ -57,7 +58,7 @@ public class UserController {
     @GetMapping("/verify-token/{token}")
     public ResponseEntity<HttpStatus> verifyEmailToken(@PathVariable String token) {
         String email = emailTokenService.getEmail(token).orElseThrow(() -> INVALID_TOKEN_EXCEPTION);
-        userService.setEnabled(email);
+        userService.setEnabledByEmail(email);
 
         return RESPONSE_OK;
     }
