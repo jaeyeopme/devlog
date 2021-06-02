@@ -20,12 +20,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Optional;
-
 import static io.devlog.devlog.docs.ApiDocumentationUtil.getDocumentRequest;
 import static io.devlog.devlog.docs.ApiDocumentationUtil.getDocumentResponse;
 import static io.devlog.devlog.fixture.UserFixture.*;
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
+import static io.devlog.devlog.user.exception.UserResponseStatusException.INVALID_TOKEN_EXCEPTION;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -89,7 +88,7 @@ class UserControllerTest {
     @Test
     @DisplayName("중복된 이메일로 회원가입에 실패한다.")
     void registration_Fail() throws Exception {
-        given(userService.isDuplicatedEmail(USER_REQUEST.getEmail())).willReturn(true);
+        given(userService.isDuplicated(USER_REQUEST.getEmail())).willReturn(true);
 
         mockMvc.perform(post(USER_API_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -114,7 +113,7 @@ class UserControllerTest {
     @Test
     @DisplayName("이메일 중복 검사 - 사용 가능한 이메일")
     void idDuplicatedEmail_Success() throws Exception {
-        given(userService.isDuplicatedEmail(USER_REQUEST.getEmail())).willReturn(false);
+        given(userService.isDuplicated(USER_REQUEST.getEmail())).willReturn(false);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(USER_API_URI + "/duplicated/{email}", USER_REQUEST.getEmail()))
                 .andDo(print())
@@ -129,7 +128,7 @@ class UserControllerTest {
     @Test
     @DisplayName("이메일 중복 검사 - 중복된 이메일")
     void idDuplicatedEmail_Fail() throws Exception {
-        given(userService.isDuplicatedEmail(USER_REQUEST.getEmail())).willReturn(true);
+        given(userService.isDuplicated(USER_REQUEST.getEmail())).willReturn(true);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(USER_API_URI + "/duplicated/{email}", USER_REQUEST.getEmail()))
                 .andDo(print())
@@ -145,7 +144,7 @@ class UserControllerTest {
     @Test
     @DisplayName("이메일 토큰 검증 - 유효한 토큰이라면 인증에 성공한다.")
     void verifyEmailToken_Success() throws Exception {
-        given(emailTokenService.getEmail(EMAIL_TOKEN)).willReturn(Optional.of(USER.getEmail()));
+        given(emailTokenService.verify(EMAIL_TOKEN)).willReturn(USER.getEmail());
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(USER_API_URI + "/verify-token/{token}", EMAIL_TOKEN))
                 .andDo(print())
@@ -160,7 +159,7 @@ class UserControllerTest {
     @Test
     @DisplayName("이메일 토큰 검증 - 유효하지 않은 토큰이라면 인증에 실패한다.")
     void verifyEmailToken_Fail() throws Exception {
-        given(emailTokenService.getEmail(EMAIL_TOKEN)).willReturn(Optional.empty());
+        given(emailTokenService.verify(EMAIL_TOKEN)).willThrow(INVALID_TOKEN_EXCEPTION);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(USER_API_URI + "/verify-token/{token}", EMAIL_TOKEN))
                 .andDo(print())

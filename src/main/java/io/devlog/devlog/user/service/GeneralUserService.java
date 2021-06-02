@@ -31,13 +31,13 @@ public class GeneralUserService implements UserService {
 
     @Transactional
     @Override
-    public void deleteUser(Long id) {
+    public void delete(Long id) {
         userRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public boolean isDuplicatedEmail(String email) {
+    public boolean isDuplicated(String email) {
         return userRepository.existsByEmail(email);
     }
 

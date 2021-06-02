@@ -11,9 +11,9 @@ public interface UserService {
 
     void updateUserProfile(User user, UserRequest userRequest);
 
-    void deleteUser(Long id);
+    void delete(Long id);
 
-    boolean isDuplicatedEmail(String email);
+    boolean isDuplicated(String email);
 
     void setEnabled(User user);
 

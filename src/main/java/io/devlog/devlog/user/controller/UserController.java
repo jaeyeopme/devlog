@@ -19,8 +19,8 @@ import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_O
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
 import static io.devlog.devlog.user.exception.UserResponseStatusException.DUPLICATED_EMAIL_EXCEPTION;
 
-@RequestMapping(USER_API_URI)
 @RequiredArgsConstructor
+@RequestMapping(USER_API_URI)
 @RestController
 public class UserController {
 
@@ -31,7 +31,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> registration(@Valid @RequestBody UserRequest userRequest) {
-        if (userService.isDuplicatedEmail(userRequest.getEmail()))
+        if (userService.isDuplicated(userRequest.getEmail()))
             throw DUPLICATED_EMAIL_EXCEPTION;
 
         userService.register(UserRequest.toEntity(userRequest, passwordEncoder));
@@ -41,27 +41,27 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserResponse> getUserProfile(@AuthenticationPrincipal User user) {
+    public ResponseEntity<UserResponse> getProfile(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(UserResponse.of(user));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
+        userService.delete(id);
 
         return RESPONSE_OK;
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> updateUserProfile(@Valid @RequestBody UserRequest userRequest,
-                                                          @AuthenticationPrincipal User user) {
+    public ResponseEntity<UserResponse> updateProfile(@Valid @RequestBody UserRequest userRequest,
+                                                      @AuthenticationPrincipal User user) {
         userService.updateUserProfile(user, userRequest);
         return ResponseEntity.ok(UserResponse.of(user));
     }
 
-    @GetMapping("/duplicated/{email}")
-    public ResponseEntity<HttpStatus> isDuplicatedEmail(@PathVariable String email) {
-        if (userService.isDuplicatedEmail(email))
+    @GetMapping("/duplicate/{email}")
+    public ResponseEntity<HttpStatus> duplicateCheck(@PathVariable String email) {
+        if (userService.isDuplicated(email))
             throw DUPLICATED_EMAIL_EXCEPTION;
 
         return RESPONSE_OK;

@@ -15,6 +15,12 @@ public class GeneralPostService implements PostService {
 
     private final PostRepository postRepository;
 
+    @Transactional
+    @Override
+    public void write(Post post) {
+        postRepository.save(post);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Post findById(Long id) {
@@ -24,13 +30,7 @@ public class GeneralPostService implements PostService {
 
     @Transactional
     @Override
-    public void writPost(Post post) {
-        postRepository.save(post);
-    }
-
-    @Transactional
-    @Override
-    public void modifyPost(Post post, PostRequest postRequest) {
+    public void modify(Post post, PostRequest postRequest) {
         post.modifyPost(postRequest);
     }
 

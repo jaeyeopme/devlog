@@ -17,13 +17,11 @@ public class PostRequest {
 
     private String content;
 
-    private User author;
-
-    public static Post toEntity(PostRequest postRequest, User user) {
+    public static Post toEntity(PostRequest postRequest, User author) {
         return Post.builder()
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
-                .author(user)
+                .author(author)
                 .build();
     }
 

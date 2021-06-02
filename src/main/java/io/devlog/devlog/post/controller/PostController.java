@@ -18,47 +18,47 @@ import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_O
 import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
 import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_UNAUTHORIZED_EXCEPTION;
 
-@RequestMapping(POST_API_URI)
 @RequiredArgsConstructor
+@RequestMapping(POST_API_URI)
 @RestController
 public class PostController {
 
     public static final String POST_API_URI = "/api/posts";
     private final PostService postService;
 
+    @PostMapping
+    public ResponseEntity<HttpStatus> write(@Valid @RequestBody PostRequest postRequest,
+                                            @AuthenticationPrincipal User author) {
+        postService.write(PostRequest.toEntity(postRequest, author));
+
+        return RESPONSE_CREATED;
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
         return ResponseEntity.ok(PostResponse.of(postService.findById(id)));
     }
 
-    @PostMapping
-    public ResponseEntity<HttpStatus> writePost(@Valid @RequestBody PostRequest postRequest,
-                                                @AuthenticationPrincipal User author) {
-        postService.writPost(PostRequest.toEntity(postRequest, author));
-
-        return RESPONSE_CREATED;
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<PostResponse> modifyPost(@PathVariable Long id,
-                                                   @Valid @RequestBody PostRequest postRequest,
-                                                   @AuthenticationPrincipal User user) {
+    @PutMapping("/{id}")
+    public ResponseEntity<PostResponse> modify(@PathVariable Long id,
+                                               @Valid @RequestBody PostRequest postRequest,
+                                               @AuthenticationPrincipal User author) {
         Post post = postService.findById(id);
 
-        if (post.isNotAuthor(user))
+        if (post.isNotAuthor(author))
             throw POST_UNAUTHORIZED_EXCEPTION;
 
-        postService.modifyPost(post, postRequest);
+        postService.modify(post, postRequest);
 
         return ResponseEntity.ok(PostResponse.of(post));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<HttpStatus> deletePost(@PathVariable Long id,
-                                                 @AuthenticationPrincipal User user) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id,
+                                             @AuthenticationPrincipal User author) {
         Post post = postService.findById(id);
 
-        if(post.isNotAuthor(user))
+        if (post.isNotAuthor(author))
             throw POST_UNAUTHORIZED_EXCEPTION;
 
         postService.deleteById(id);
