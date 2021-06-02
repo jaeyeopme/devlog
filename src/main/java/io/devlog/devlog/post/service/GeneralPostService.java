@@ -34,4 +34,10 @@ public class GeneralPostService implements PostService {
         post.modifyPost(postRequest);
     }
 
+    @Transactional
+    @Override
+    public void deleteById(Long id) {
+        postRepository.deleteById(id);
+    }
+
 }

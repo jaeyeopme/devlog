@@ -45,4 +45,8 @@ public class Post extends BaseTimeEntity {
         this.content = postRequest.getContent();
     }
 
+    public boolean isNotAuthor(User user) {
+        return !this.author.equals(user);
+    }
+
 }

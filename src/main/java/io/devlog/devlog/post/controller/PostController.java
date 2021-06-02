@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_CREATED;
+import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_OK;
 import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
 import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_UNAUTHORIZED_EXCEPTION;
 
@@ -38,18 +39,31 @@ public class PostController {
         return RESPONSE_CREATED;
     }
 
-    @PutMapping("{postId}")
-    public ResponseEntity<PostResponse> modifyPost(@PathVariable Long postId,
+    @PutMapping("{id}")
+    public ResponseEntity<PostResponse> modifyPost(@PathVariable Long id,
                                                    @Valid @RequestBody PostRequest postRequest,
-                                                   @AuthenticationPrincipal User author) {
-        Post post = postService.findById(postId);
+                                                   @AuthenticationPrincipal User user) {
+        Post post = postService.findById(id);
 
-        if (author != post.getAuthor())
+        if (post.isNotAuthor(user))
             throw POST_UNAUTHORIZED_EXCEPTION;
 
         postService.modifyPost(post, postRequest);
 
         return ResponseEntity.ok(PostResponse.of(post));
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<HttpStatus> deletePost(@PathVariable Long id,
+                                                 @AuthenticationPrincipal User user) {
+        Post post = postService.findById(id);
+
+        if(post.isNotAuthor(user))
+            throw POST_UNAUTHORIZED_EXCEPTION;
+
+        postService.deleteById(id);
+
+        return RESPONSE_OK;
     }
 
 }

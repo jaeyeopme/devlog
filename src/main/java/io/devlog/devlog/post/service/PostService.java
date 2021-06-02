@@ -12,4 +12,6 @@ public interface PostService {
 
     void modifyPost(Post post, PostRequest postRequest);
 
+    void deleteById(Long id);
+
 }
