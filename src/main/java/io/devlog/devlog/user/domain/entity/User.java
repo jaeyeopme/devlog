@@ -1,13 +1,18 @@
 package io.devlog.devlog.user.domain.entity;
 
+import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.common.jpa.BaseTimeEntity;
+import io.devlog.devlog.post.domain.entity.Post;
+import io.devlog.devlog.user.dto.UserRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,7 +22,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class User extends BaseTimeEntity {
+public class User extends BaseTimeEntity implements UserDetails {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -40,6 +45,12 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean enabled;
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
+
     @Builder
     public User(String email, String password, String nickname) {
         this.authorities = new HashSet<>();
@@ -48,12 +59,32 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    public static void setEnabled(User user) {
-        user.setEnabled();
-    }
-
-    private void setEnabled() {
+    public void setEnabled() {
         this.enabled = true;
     }
 
+    public void updateProfile(UserRequest userRequest) {
+        this.email = userRequest.getEmail();
+        this.nickname = userRequest.getNickname();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.enabled;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.enabled;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.enabled;
+    }
 }

@@ -1,7 +1,5 @@
 package io.devlog.devlog.user.service;
 
-import io.devlog.devlog.user.domain.entity.User;
-import io.devlog.devlog.user.domain.entity.UserPrincipal;
 import io.devlog.devlog.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +19,8 @@ public class SessionLoginService implements UserDetailsService {
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
-
-        return new UserPrincipal(user);
     }
 
 }
