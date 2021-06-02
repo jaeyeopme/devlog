@@ -6,8 +6,10 @@ import io.devlog.devlog.user.domain.entity.User;
 
 public interface PostService {
 
-    Post findPost(Long id);
+    Post findById(Long id);
 
     void writPost(Post post);
+
+    void modifyPost(Post post, PostRequest postRequest);
 
 }

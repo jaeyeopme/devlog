@@ -1,5 +1,6 @@
 package io.devlog.devlog.post.controller;
 
+import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.dto.PostRequest;
 import io.devlog.devlog.post.dto.PostResponse;
 import io.devlog.devlog.post.service.PostService;
@@ -9,12 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
 import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_CREATED;
 import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
+import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_UNAUTHORIZED_EXCEPTION;
 
 @RequestMapping(POST_API_URI)
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-        return ResponseEntity.ok(PostResponse.of(postService.findPost(id)));
+        return ResponseEntity.ok(PostResponse.of(postService.findById(id)));
     }
 
     @PostMapping
@@ -37,5 +38,18 @@ public class PostController {
         return RESPONSE_CREATED;
     }
 
+    @PutMapping("{postId}")
+    public ResponseEntity<PostResponse> modifyPost(@PathVariable Long postId,
+                                                   @Valid @RequestBody PostRequest postRequest,
+                                                   @AuthenticationPrincipal User author) {
+        Post post = postService.findById(postId);
+
+        if (author != post.getAuthor())
+            throw POST_UNAUTHORIZED_EXCEPTION;
+
+        postService.modifyPost(post, postRequest);
+
+        return ResponseEntity.ok(PostResponse.of(post));
+    }
 
 }
