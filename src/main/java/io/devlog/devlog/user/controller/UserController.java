@@ -3,6 +3,7 @@ package io.devlog.devlog.user.controller;
 import io.devlog.devlog.common.token.EmailTokenService;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRequest;
+import io.devlog.devlog.user.dto.UserResponse;
 import io.devlog.devlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,6 @@ import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_C
 import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_OK;
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
 import static io.devlog.devlog.user.exception.UserResponseStatusException.DUPLICATED_EMAIL_EXCEPTION;
-import static io.devlog.devlog.user.exception.UserResponseStatusException.INVALID_TOKEN_EXCEPTION;
 
 @RequestMapping(USER_API_URI)
 @RequiredArgsConstructor
@@ -40,6 +40,24 @@ public class UserController {
         return RESPONSE_CREATED;
     }
 
+    @GetMapping
+    public ResponseEntity<UserResponse> getUserProfile(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(UserResponse.of(user));
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return RESPONSE_OK;
+    }
+
+    @PutMapping
+    public ResponseEntity<UserResponse> updateUserProfile(@Valid @RequestBody UserRequest userRequest,
+                                                          @AuthenticationPrincipal User user) {
+        userService.updateUserProfile(user, userRequest);
+        return ResponseEntity.ok(UserResponse.of(user));
+    }
+
     @GetMapping("/duplicated/{email}")
     public ResponseEntity<HttpStatus> isDuplicatedEmail(@PathVariable String email) {
         if (userService.isDuplicatedEmail(email))
@@ -57,8 +75,9 @@ public class UserController {
 
     @GetMapping("/verify-token/{token}")
     public ResponseEntity<HttpStatus> verifyEmailToken(@PathVariable String token) {
-        String email = emailTokenService.getEmail(token).orElseThrow(() -> INVALID_TOKEN_EXCEPTION);
-        userService.setEnabledByEmail(email);
+        String email = emailTokenService.verify(token);
+
+        userService.setEnabled(userService.findByEmail(email));
 
         return RESPONSE_OK;
     }

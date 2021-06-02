@@ -5,9 +5,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import static io.devlog.devlog.common.constant.EmailConstant.*;
+import static io.devlog.devlog.user.exception.UserResponseStatusException.INVALID_TOKEN_EXCEPTION;
 
 @RequiredArgsConstructor
 @Service
@@ -43,8 +42,9 @@ public class EmailTokenService {
     }
 
     // 인증 토큰 삭제 후 이메일을 가져옴.
-    public Optional<String> getEmail(String token) {
-        return tokenRedis.getEmail(token);
+    public String verify(String token) {
+        return tokenRedis.getEmail(token)
+                .orElseThrow(() -> INVALID_TOKEN_EXCEPTION);
     }
 
 }

@@ -1,17 +1,20 @@
 package io.devlog.devlog.user.service;
 
 import io.devlog.devlog.user.domain.entity.User;
-
-import java.util.Optional;
+import io.devlog.devlog.user.dto.UserRequest;
 
 public interface UserService {
 
-    boolean isDuplicatedEmail(String email);
-
     void register(User user);
 
-    Optional<User> findByEmail(String email);
+    User findByEmail(String email);
 
-    void setEnabledByEmail(String email);
+    void updateUserProfile(User user, UserRequest userRequest);
+
+    void deleteUser(Long id);
+
+    boolean isDuplicatedEmail(String email);
+
+    void setEnabled(User user);
 
 }
