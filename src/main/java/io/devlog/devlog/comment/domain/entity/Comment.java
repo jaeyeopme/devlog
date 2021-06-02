@@ -5,6 +5,7 @@ import io.devlog.devlog.common.jpa.BaseTimeEntity;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.user.domain.entity.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,10 +24,17 @@ public class Comment extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private User author;
+    private Post post;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Post post;
+    private User author;
+
+    @Builder
+    public Comment(String content, Post post, User author) {
+        this.content = content;
+        this.post = post;
+        this.author = author;
+    }
 
 }
