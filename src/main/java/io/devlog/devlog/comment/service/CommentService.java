@@ -11,4 +11,6 @@ public interface CommentService {
 
     void modify(Comment comment, CommentRequest commentRequest);
 
+    void deleteById(Long id);
+
 }

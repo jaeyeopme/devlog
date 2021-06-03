@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import static io.devlog.devlog.comment.controller.CommentController.COMMENT_API_URI;
 import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_UNAUTHORIZED_EXCEPTION;
 import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_CREATED;
+import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_OK;
 
 @RequiredArgsConstructor
 @RequestMapping(COMMENT_API_URI)
@@ -54,6 +55,19 @@ public class CommentController {
         commentService.modify(comment, commentRequest);
 
         return ResponseEntity.ok(CommentResponse.of(comment));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id,
+                                             @AuthenticationPrincipal User author) {
+        Comment comment = commentService.findById(id);
+
+        if (comment.isNotAuthor(author))
+            throw COMMENT_UNAUTHORIZED_EXCEPTION;
+
+        commentService.deleteById(id);
+
+        return RESPONSE_OK;
     }
 
 }

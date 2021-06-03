@@ -34,4 +34,10 @@ public class GeneralCommentService implements CommentService {
         comment.modify(commentRequest);
     }
 
+    @Transactional
+    @Override
+    public void deleteById(Long id) {
+        commentRepository.deleteById(id);
+    }
+
 }
