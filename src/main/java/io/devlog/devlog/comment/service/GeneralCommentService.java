@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_NOT_FOUND_EXCEPTION;
+
 @RequiredArgsConstructor
 @Service
 public class GeneralCommentService implements CommentService {
@@ -16,6 +18,13 @@ public class GeneralCommentService implements CommentService {
     @Override
     public void write(Comment comment) {
         commentRepository.save(comment);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Comment findById(Long id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> COMMENT_NOT_FOUND_EXCEPTION);
     }
 
 }

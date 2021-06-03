@@ -6,4 +6,6 @@ public interface CommentService {
 
     void write(Comment comment);
 
+    Comment findById(Long id);
+
 }

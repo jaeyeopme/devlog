@@ -1,18 +1,17 @@
 package io.devlog.devlog.comment.controller;
 
 import io.devlog.devlog.comment.dto.CommentRequest;
+import io.devlog.devlog.comment.dto.CommentResponse;
 import io.devlog.devlog.comment.service.CommentService;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.service.PostService;
 import io.devlog.devlog.user.domain.entity.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -35,6 +34,11 @@ public class CommentController {
         commentService.write(CommentRequest.toEntity(commentRequest, post, author));
 
         return RESPONSE_CREATED;
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<CommentResponse> getComment(@PathVariable Long id) {
+        return ResponseEntity.ok(CommentResponse.of(commentService.findById(id)));
     }
 
 }
