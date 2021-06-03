@@ -1,6 +1,6 @@
 package io.devlog.devlog.comment.domain.entity;
 
-
+import io.devlog.devlog.comment.dto.CommentRequest;
 import io.devlog.devlog.common.jpa.BaseTimeEntity;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.user.domain.entity.User;
@@ -35,6 +35,14 @@ public class Comment extends BaseTimeEntity {
         this.content = content;
         this.post = post;
         this.author = author;
+    }
+
+    public void modify(CommentRequest commentRequest) {
+        this.content = commentRequest.getContent();
+    }
+
+    public boolean isNotAuthor(User author) {
+        return !this.author.equals(author);
     }
 
 }

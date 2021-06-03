@@ -1,12 +1,12 @@
 package io.devlog.devlog.comment.controller;
 
+import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.dto.CommentRequest;
 import io.devlog.devlog.comment.dto.CommentResponse;
 import io.devlog.devlog.comment.service.CommentService;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.service.PostService;
 import io.devlog.devlog.user.domain.entity.User;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static io.devlog.devlog.comment.controller.CommentController.COMMENT_API_URI;
+import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_UNAUTHORIZED_EXCEPTION;
 import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_CREATED;
 
 @RequiredArgsConstructor
@@ -36,9 +37,23 @@ public class CommentController {
         return RESPONSE_CREATED;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CommentResponse> getComment(@PathVariable Long id) {
         return ResponseEntity.ok(CommentResponse.of(commentService.findById(id)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentResponse> modify(@PathVariable Long id,
+                                                  @Valid @RequestBody CommentRequest commentRequest,
+                                                  @AuthenticationPrincipal User author) {
+        Comment comment = commentService.findById(id);
+
+        if (comment.isNotAuthor(author))
+            throw COMMENT_UNAUTHORIZED_EXCEPTION;
+
+        commentService.modify(comment, commentRequest);
+
+        return ResponseEntity.ok(CommentResponse.of(comment));
     }
 
 }

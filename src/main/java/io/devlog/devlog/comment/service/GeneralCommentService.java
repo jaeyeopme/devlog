@@ -2,6 +2,7 @@ package io.devlog.devlog.comment.service;
 
 import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.domain.repository.CommentRepository;
+import io.devlog.devlog.comment.dto.CommentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,12 @@ public class GeneralCommentService implements CommentService {
     public Comment findById(Long id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> COMMENT_NOT_FOUND_EXCEPTION);
+    }
+
+    @Transactional
+    @Override
+    public void modify(Comment comment, CommentRequest commentRequest) {
+        comment.modify(commentRequest);
     }
 
 }

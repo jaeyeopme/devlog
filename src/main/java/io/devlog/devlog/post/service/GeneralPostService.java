@@ -31,7 +31,7 @@ public class GeneralPostService implements PostService {
     @Transactional
     @Override
     public void modify(Post post, PostRequest postRequest) {
-        post.modifyPost(postRequest);
+        post.modify(postRequest);
     }
 
     @Transactional

@@ -40,7 +40,7 @@ public class Post extends BaseTimeEntity {
         this.author = author;
     }
 
-    public void modifyPost(PostRequest postRequest) {
+    public void modify(PostRequest postRequest) {
         this.title = postRequest.getTitle();
         this.content = postRequest.getContent();
     }
