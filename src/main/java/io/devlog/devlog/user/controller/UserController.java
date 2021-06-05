@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getProfile(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> search(@PathVariable Long id) {
         return ResponseEntity.ok(UserResponse.of(userService.findById(id)));
     }
 
@@ -51,8 +51,8 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> updateProfile(@Valid @RequestBody UserRequest userRequest,
-                                                      @AuthenticationPrincipal PrincipalDetails userDetails) {
+    public ResponseEntity<UserResponse> update(@Valid @RequestBody UserRequest userRequest,
+                                               @AuthenticationPrincipal PrincipalDetails userDetails) {
         userService.updateUserProfile(userDetails.getUser(), userRequest);
         return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
     }
