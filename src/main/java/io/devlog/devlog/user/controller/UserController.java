@@ -1,7 +1,7 @@
 package io.devlog.devlog.user.controller;
 
-import io.devlog.devlog.common.token.EmailTokenService;
-import io.devlog.devlog.user.domain.entity.User;
+import io.devlog.devlog.common.email.EmailTokenService;
+import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.dto.UserRequest;
 import io.devlog.devlog.user.dto.UserResponse;
 import io.devlog.devlog.user.service.UserService;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_CREATED;
-import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_OK;
+import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_CREATED;
+import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_OK;
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
 import static io.devlog.devlog.user.exception.UserResponseStatusException.DUPLICATED_EMAIL_EXCEPTION;
 
@@ -40,23 +40,28 @@ public class UserController {
         return RESPONSE_CREATED;
     }
 
-    @GetMapping
-    public ResponseEntity<UserResponse> getProfile(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(UserResponse.of(user));
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getProfile(@PathVariable Long id) {
+        return ResponseEntity.ok(UserResponse.of(userService.findById(id)));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
-        userService.delete(id);
-
-        return RESPONSE_OK;
+    @GetMapping("/my-profile")
+    public ResponseEntity<UserResponse> getMyProfile(@AuthenticationPrincipal PrincipalDetails userDetails) {
+        return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
     }
 
     @PutMapping
     public ResponseEntity<UserResponse> updateProfile(@Valid @RequestBody UserRequest userRequest,
-                                                      @AuthenticationPrincipal User user) {
-        userService.updateUserProfile(user, userRequest);
-        return ResponseEntity.ok(UserResponse.of(user));
+                                                      @AuthenticationPrincipal PrincipalDetails userDetails) {
+        userService.updateUserProfile(userDetails.getUser(), userRequest);
+        return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
+        userService.delete(id);
+
+        return RESPONSE_OK;
     }
 
     @GetMapping("/duplicate/{email}")
@@ -68,8 +73,8 @@ public class UserController {
     }
 
     @PostMapping("/email-verification")
-    public ResponseEntity<HttpStatus> sendEmailToken(@AuthenticationPrincipal User user) {
-        emailTokenService.sendEmailToken(user.getEmail());
+    public ResponseEntity<HttpStatus> sendEmailToken(@AuthenticationPrincipal PrincipalDetails userDetails) {
+        emailTokenService.sendEmailToken(userDetails.getUser().getEmail());
 
         return RESPONSE_OK;
     }

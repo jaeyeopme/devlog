@@ -7,6 +7,8 @@ public interface UserService {
 
     void register(User user);
 
+    User findById(Long id);
+
     User findByEmail(String email);
 
     void updateUserProfile(User user, UserRequest userRequest);

@@ -23,6 +23,13 @@ public class GeneralUserService implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
+    }
+
     @Transactional
     @Override
     public void updateUserProfile(User user, UserRequest userRequest) {
@@ -37,14 +44,14 @@ public class GeneralUserService implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public boolean isDuplicated(String email) {
+    public boolean isDuplicated(java.lang.String email) {
         return userRepository.existsByEmail(email);
     }
 
 
     @Transactional(readOnly = true)
     @Override
-    public User findByEmail(String email) {
+    public User findByEmail(java.lang.String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
     }

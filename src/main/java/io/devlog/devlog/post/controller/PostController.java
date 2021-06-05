@@ -4,7 +4,7 @@ import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.dto.PostRequest;
 import io.devlog.devlog.post.dto.PostResponse;
 import io.devlog.devlog.post.service.PostService;
-import io.devlog.devlog.user.domain.entity.User;
+import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_CREATED;
-import static io.devlog.devlog.common.constant.ResponseEntityConstant.RESPONSE_OK;
+import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_CREATED;
+import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_OK;
 import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
 import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_UNAUTHORIZED_EXCEPTION;
 
@@ -28,8 +28,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> write(@Valid @RequestBody PostRequest postRequest,
-                                            @AuthenticationPrincipal User author) {
-        postService.write(PostRequest.toEntity(postRequest, author));
+                                            @AuthenticationPrincipal PrincipalDetails userDetails) {
+        postService.write(PostRequest.toEntity(postRequest, userDetails.getUser()));
 
         return RESPONSE_CREATED;
     }
@@ -42,10 +42,10 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> modify(@PathVariable Long id,
                                                @Valid @RequestBody PostRequest postRequest,
-                                               @AuthenticationPrincipal User author) {
+                                               @AuthenticationPrincipal PrincipalDetails userDetails) {
         Post post = postService.findById(id);
 
-        if (post.isNotAuthor(author))
+        if (post.isNotAuthor(userDetails.getUser()))
             throw POST_UNAUTHORIZED_EXCEPTION;
 
         postService.modify(post, postRequest);
@@ -55,10 +55,10 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> delete(@PathVariable Long id,
-                                             @AuthenticationPrincipal User author) {
+                                             @AuthenticationPrincipal PrincipalDetails userDetails) {
         Post post = postService.findById(id);
 
-        if (post.isNotAuthor(author))
+        if (post.isNotAuthor(userDetails.getUser()))
             throw POST_UNAUTHORIZED_EXCEPTION;
 
         postService.deleteById(id);
