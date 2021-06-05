@@ -2,8 +2,10 @@ package io.devlog.devlog.post.dto;
 
 import io.devlog.devlog.post.domain.entity.Post;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @Builder
 @RequiredArgsConstructor
 public class PostResponse {

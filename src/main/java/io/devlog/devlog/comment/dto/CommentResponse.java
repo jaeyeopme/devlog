@@ -2,8 +2,10 @@ package io.devlog.devlog.comment.dto;
 
 import io.devlog.devlog.comment.domain.entity.Comment;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @Builder
 @RequiredArgsConstructor
 public class CommentResponse {
