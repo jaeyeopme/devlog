@@ -1,16 +1,16 @@
 package io.devlog.devlog.common.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -20,17 +20,9 @@ import static org.springframework.http.HttpMethod.POST;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
     }
 
     @Override
@@ -47,9 +39,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("SESSION");
 
         http.authorizeRequests(authorize -> authorize
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).anonymous()
                 .mvcMatchers(POST, USER_API_URI).anonymous()
                 .mvcMatchers(GET, USER_API_URI + "/verify-token/**").anonymous()
-                .mvcMatchers(GET, USER_API_URI + "/duplicated/**").permitAll()
+                .mvcMatchers(GET, USER_API_URI + "/duplicate/**").anonymous()
+                .mvcMatchers(GET, POST_API_URI + "/**").permitAll()
                 .mvcMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
                 .httpBasic();

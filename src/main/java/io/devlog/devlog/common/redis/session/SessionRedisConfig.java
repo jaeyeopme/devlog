@@ -1,4 +1,4 @@
-package io.devlog.devlog.common.security;
+package io.devlog.devlog.common.redis.session;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,19 +18,19 @@ public class SessionRedisConfig {
     @Value("${spring.redis.session.host}")
     private String host;
 
-    @Value("${spring.redis.session.password}")
-    private String password;
-
     @Value("${spring.redis.session.port}")
     private int port;
+
+    @Value("${spring.redis.session.password}")
+    private String password;
 
     @Primary
     @Bean(name = "sessionRedisFactory")
     public RedisConnectionFactory sessionRedisFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
-        redisStandaloneConfiguration.setPassword(password);
         redisStandaloneConfiguration.setPort(port);
+        redisStandaloneConfiguration.setPassword(password);
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 

@@ -9,8 +9,11 @@ spring:
     ansi:
       enabled: always
 
+  cache:
+    type: redis
+
   redis:
-    token:
+    cache:
       host: ENC(wOE0C4t/QQZ1xQ2C+78CREq5wDLhNASC)
       port: ENC(WA37eyHWagVJsRJUuQyo5A==)
       password: ENC(M5a8/CUZrpchoR+uz9pj2BTPzvMHu7ZU)
