@@ -1,6 +1,5 @@
 package io.devlog.devlog.user.domain.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

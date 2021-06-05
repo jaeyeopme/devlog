@@ -3,7 +3,7 @@ package io.devlog.devlog.user.service;
 import io.devlog.devlog.user.domain.entity.Authority;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.domain.repository.UserRepository;
-import io.devlog.devlog.user.dto.UserRequest;
+import io.devlog.devlog.user.dto.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +32,8 @@ public class GeneralUserService implements UserService {
 
     @Transactional
     @Override
-    public void updateUserProfile(User user, UserRequest userRequest) {
-        user.updateProfile(userRequest);
+    public void updateUserProfile(User user, UserUpdateRequest userUpdateRequest) {
+        user.updateProfile(userUpdateRequest);
     }
 
     @Transactional

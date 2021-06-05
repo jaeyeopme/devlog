@@ -16,7 +16,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserRequest {
+public class UserRegisterRequest {
 
     @NotBlank(message = "이메일을 입력해주세요.")
     @Email(message = "유효하지 않은 이메일 형식입니다.",
@@ -31,11 +31,11 @@ public class UserRequest {
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
 
-    public static User toEntity(UserRequest userRequest, PasswordEncoder passwordEncoder) {
+    public static User toEntity(UserRegisterRequest userRegisterRequest, PasswordEncoder passwordEncoder) {
         return User.builder()
-                .email(userRequest.email)
-                .password(passwordEncoder.encode(userRequest.password))
-                .nickname(userRequest.nickname)
+                .email(userRegisterRequest.email)
+                .password(passwordEncoder.encode(userRegisterRequest.password))
+                .nickname(userRegisterRequest.nickname)
                 .build();
     }
 

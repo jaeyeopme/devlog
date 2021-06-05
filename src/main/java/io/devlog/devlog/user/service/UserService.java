@@ -1,7 +1,7 @@
 package io.devlog.devlog.user.service;
 
 import io.devlog.devlog.user.domain.entity.User;
-import io.devlog.devlog.user.dto.UserRequest;
+import io.devlog.devlog.user.dto.UserUpdateRequest;
 
 public interface UserService {
 
@@ -11,7 +11,7 @@ public interface UserService {
 
     User findByEmail(String email);
 
-    void updateUserProfile(User user, UserRequest userRequest);
+    void updateUserProfile(User user, UserUpdateRequest userUpdateRequest);
 
     void delete(Long id);
 

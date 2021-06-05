@@ -2,7 +2,8 @@ package io.devlog.devlog.user.controller;
 
 import io.devlog.devlog.common.email.EmailTokenService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
-import io.devlog.devlog.user.dto.UserRequest;
+import io.devlog.devlog.user.dto.UserRegisterRequest;
+import io.devlog.devlog.user.dto.UserUpdateRequest;
 import io.devlog.devlog.user.dto.UserResponse;
 import io.devlog.devlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,12 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registration(@Valid @RequestBody UserRequest userRequest) {
-        if (userService.isDuplicated(userRequest.getEmail()))
+    public ResponseEntity<HttpStatus> registration(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
+        if (userService.isDuplicated(userRegisterRequest.getEmail()))
             throw DUPLICATED_EMAIL_EXCEPTION;
 
-        userService.register(UserRequest.toEntity(userRequest, passwordEncoder));
-        emailTokenService.sendEmailToken(userRequest.getEmail());
+        userService.register(UserRegisterRequest.toEntity(userRegisterRequest, passwordEncoder));
+        emailTokenService.sendEmailToken(userRegisterRequest.getEmail());
 
         return RESPONSE_CREATED;
     }
@@ -51,9 +52,9 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> update(@Valid @RequestBody UserRequest userRequest,
+    public ResponseEntity<UserResponse> update(@Valid @RequestBody UserUpdateRequest userUpdateRequest,
                                                @AuthenticationPrincipal PrincipalDetails userDetails) {
-        userService.updateUserProfile(userDetails.getUser(), userRequest);
+        userService.updateUserProfile(userDetails.getUser(), userUpdateRequest);
         return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
     }
 

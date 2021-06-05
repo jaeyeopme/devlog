@@ -1,17 +1,17 @@
 package io.devlog.devlog.user.dto;
 
+import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.domain.entity.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserResponse {
 
-    private final String email;
-    private final String nickname;
+    private String email;
+    private String nickname;
 
     public static UserResponse of(User user) {
         return UserResponse.builder()

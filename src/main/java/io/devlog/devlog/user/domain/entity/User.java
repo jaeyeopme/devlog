@@ -3,7 +3,7 @@ package io.devlog.devlog.user.domain.entity;
 import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.common.jpa.BaseTimeEntity;
 import io.devlog.devlog.post.domain.entity.Post;
-import io.devlog.devlog.user.dto.UserRequest;
+import io.devlog.devlog.user.dto.UserUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,9 +62,8 @@ public class User extends BaseTimeEntity {
         this.enabled = true;
     }
 
-    public void updateProfile(UserRequest userRequest) {
-        this.email = userRequest.getEmail();
-        this.nickname = userRequest.getNickname();
+    public void updateProfile(UserUpdateRequest userUpdateRequest) {
+        this.nickname = userUpdateRequest.getNickname();
     }
 
 }
