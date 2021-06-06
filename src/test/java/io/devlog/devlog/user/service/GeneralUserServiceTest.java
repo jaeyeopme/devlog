@@ -1,6 +1,9 @@
 package io.devlog.devlog.user.service;
 
+import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.domain.repository.UserRepository;
+import io.devlog.devlog.user.dto.UserUpdateRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,11 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static io.devlog.devlog.fixture.UserFixture.USER_REQUEST;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import java.util.Optional;
+
+import static io.devlog.devlog.user.exception.UserResponseStatusException.USER_NOT_FOUND_EXCEPTION;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GeneralUserServiceTest {
@@ -21,23 +25,124 @@ class GeneralUserServiceTest {
     UserRepository userRepository;
 
     @InjectMocks
-    private GeneralUserService generalUserService;
+    GeneralUserService userService;
 
-    @DisplayName("중복된 이메일이 없을 경우 FALSE 를 반환한다.")
-    @Test
-    void isDuplicatedEmail_Duplicated_False() {
-        when(userRepository.existsByEmail(any())).thenReturn(false);
+    private UserUpdateRequest userUpdateRequest;
+    private User user;
 
-        assertFalse(generalUserService.isDuplicated(USER_REQUEST.getEmail()));
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("email@email.com")
+                .password("Password1234!")
+                .nickname("nickname")
+                .build();
+
+        userUpdateRequest = UserUpdateRequest.builder()
+                .nickname("nickname2")
+                .build();
     }
 
-    @DisplayName("중복된 이메일이 있을 경우 TRUE 를 반환한다.")
+    @DisplayName("회원가입에 성공한다.")
     @Test
-    void isDuplicatedEmail_NotDuplicated_True() {
-        when(userRepository.existsByEmail(any())).thenReturn(true);
+    void register() {
+        userService.register(user);
 
-        assertTrue(generalUserService.isDuplicated(USER_REQUEST.getEmail()));
+        then(userRepository).should(only()).save(any());
     }
 
+    @DisplayName("존재하는 사용자의 ID로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
+    @Test
+    void findByIdWithExistId() {
+        given(userRepository.findById(any())).willReturn(Optional.of(user));
+
+        User findUser = userService.findById(any());
+
+        assertThat(user).isEqualTo(findUser);
+        then(userRepository).should(only()).findById(any());
+    }
+
+    @DisplayName("존재하지 않는 사용자의 ID로 사용자를 조회하는 경우 실패한다.")
+    @Test
+    void findByIdWithNotExistId() {
+        given(userRepository.findById(any())).willReturn(Optional.empty());
+
+        assertThrows(USER_NOT_FOUND_EXCEPTION.getClass(), () -> userService.findById(any()));
+
+        then(userRepository).should(only()).findById(any());
+    }
+
+    @DisplayName("사용자의 프로필을 수정한다.")
+    @Test
+    void updateProfile() {
+        assertThat(user.getNickname()).isNotEqualTo(userUpdateRequest.getNickname());
+
+        userService.updateProfile(user, userUpdateRequest);
+
+        assertThat(user.getNickname()).isEqualTo(userUpdateRequest.getNickname());
+    }
+
+    @DisplayName("사용자의 프로필을 삭제한다.")
+    @Test
+    void deleteProfile() {
+        willDoNothing().given(userRepository).deleteById(any());
+
+        userService.deleteProfile(any());
+
+        then(userRepository).should(only()).deleteById(any());
+    }
+
+    @DisplayName("존재하는 이메일로 중복검사를 하는 경우 실패한다.")
+    @Test
+    void duplicateCheckWithDuplicatedEmail() {
+        given(userRepository.existsByEmail(any())).willReturn(true);
+
+        boolean duplicated = userService.isDuplicated(any());
+
+        assertTrue(duplicated);
+        then(userRepository).should(only()).existsByEmail(any());
+    }
+
+    @DisplayName("존재하지 않는 이메일로 중복검사를 하는 경우 성공한다.")
+    @Test
+    void duplicateCheckWithNotDuplicatedEmail() {
+        given(userRepository.existsByEmail(any())).willReturn(false);
+
+        boolean duplicated = userService.isDuplicated(any());
+
+        assertFalse(duplicated);
+        then(userRepository).should(only()).existsByEmail(any());
+    }
+
+    @DisplayName("존재하는 사용자의 이메일로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
+    @Test
+    void findByIdWithExistEmail() {
+        given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
+
+        User findUser = userService.findByEmail(any());
+
+        assertThat(user).isEqualTo(findUser);
+        then(userRepository).should(only()).findByEmail(any());
+    }
+
+    @DisplayName("존재하지 않는 사용자의 이메일로 사용자를 조회하는 경우 실패한다.")
+    @Test
+    void findByIdWithNotExistEmail() {
+        given(userRepository.findByEmail(any())).willReturn(Optional.empty());
+
+        assertThrows(USER_NOT_FOUND_EXCEPTION.getClass(), () -> userService.findByEmail(any()));
+
+        then(userRepository).should(only()).findByEmail(any());
+    }
+
+    @DisplayName("사용자가 활성화된다.")
+    @Test
+    void setEnabled() {
+        assertFalse(user.isEnabled());
+
+        userService.setEnabled(user);
+
+        assertTrue(user.isEnabled());
+    }
 
 }
