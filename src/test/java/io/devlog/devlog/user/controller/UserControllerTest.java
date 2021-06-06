@@ -82,11 +82,7 @@ class UserControllerTest {
     @DisplayName("중복되지 않은 이메일로 회원가입한 경우 HTTP 상태코드 201을 반환한다.")
     @Test
     void registerWithNotDuplicatedEmail() throws Exception {
-        User user = UserRegisterRequest.toEntity(userRegisterRequest, passwordEncoder);
-
         given(userService.isDuplicated(userRegisterRequest.getEmail())).willReturn(false);
-        willDoNothing().given(userService).register(user);
-        willDoNothing().given(emailTokenService).sendEmailToken(userRegisterRequest.getEmail());
 
         MockHttpServletRequestBuilder requestBuilder = post(USER_API_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -155,9 +151,7 @@ class UserControllerTest {
 
     @DisplayName("접속되어있는 사용자가 개인 프로필을 수정할 경우 HTTP 상태코드 200과 UserResponse 를 반환한다.")
     @Test
-    void updateProfile() throws Exception {
-        willDoNothing().given(userService).updateUserProfile(user, userUpdateRequest);
-
+    void udppateMyProfile() throws Exception {
         MockHttpServletRequestBuilder requestBuilder = put(USER_API_URI)
                 .with(toPrincipal(user))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -168,6 +162,16 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(toJson(UserResponse.of(user))));
+    }
+
+    @DisplayName("접속되어잇는 사용자가 회원탈퇴할 경우 HTTP 상태코드 200을 반환한다.")
+    @Test
+    void deleteMyProfile() throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = delete(USER_API_URI).with(toPrincipal(user));
+
+        mockMvc.perform(requestBuilder)
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @DisplayName("중복된 이메일이 없을 경우 HTTP 상태코드 200을 반환한다.")
@@ -199,8 +203,6 @@ class UserControllerTest {
     @DisplayName("이메일 토큰 전송에 성공한 경우 HTTP 상태코드 200을 반환한다.")
     @Test
     void sendEmailTokenWithLoginUser() throws Exception {
-        willDoNothing().given(emailTokenService).sendEmailToken(email);
-
         MockHttpServletRequestBuilder requestBuilder = post(USER_API_URI + "/email-verification")
                 .with(toPrincipal(user));
 
@@ -213,12 +215,28 @@ class UserControllerTest {
     @Test
     void verifyWithValidEmailToken() throws Exception {
         given(emailTokenService.verify(emailToken)).willReturn(email);
+        given(userService.findByEmail(email)).willReturn(user);
+        willDoNothing().given(userService).setEnabled(user);
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/verify-token/{token}", emailToken);
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("유효한 이메일 토큰이지만 유효하지 않은 이메일일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
+    @Test
+    void verifyWithValidEmailTokenAndInvalidEmail() throws Exception {
+        given(emailTokenService.verify(emailToken)).willReturn(email);
+        given(userService.findByEmail(email)).willThrow(USER_NOT_FOUND_EXCEPTION);
+
+        MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/verify-token/{token}", emailToken);
+
+        mockMvc.perform(requestBuilder)
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason("사용자를 찾을 수 없습니다."));
     }
 
     @DisplayName("유효하지 않은 이메일 토큰일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
