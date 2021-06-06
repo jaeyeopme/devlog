@@ -3,8 +3,8 @@ package io.devlog.devlog.user.controller;
 import io.devlog.devlog.common.email.EmailTokenService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.dto.UserRegisterRequest;
-import io.devlog.devlog.user.dto.UserUpdateRequest;
 import io.devlog.devlog.user.dto.UserResponse;
+import io.devlog.devlog.user.dto.UserUpdateRequest;
 import io.devlog.devlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -52,15 +52,15 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> update(@Valid @RequestBody UserUpdateRequest userUpdateRequest,
+    public ResponseEntity<UserResponse> updateMyProfile(@Valid @RequestBody UserUpdateRequest userUpdateRequest,
                                                @AuthenticationPrincipal PrincipalDetails userDetails) {
-        userService.updateUserProfile(userDetails.getUser(), userUpdateRequest);
+        userService.updateProfile(userDetails.getUser(), userUpdateRequest);
         return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
-        userService.delete(id);
+    @DeleteMapping
+    public ResponseEntity<HttpStatus> deleteMyProfile(@AuthenticationPrincipal PrincipalDetails userDetails) {
+        userService.deleteProfile(userDetails.getUser().getId());
 
         return RESPONSE_OK;
     }

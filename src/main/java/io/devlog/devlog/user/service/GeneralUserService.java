@@ -32,26 +32,26 @@ public class GeneralUserService implements UserService {
 
     @Transactional
     @Override
-    public void updateUserProfile(User user, UserUpdateRequest userUpdateRequest) {
+    public void updateProfile(User user, UserUpdateRequest userUpdateRequest) {
         user.updateProfile(userUpdateRequest);
     }
 
     @Transactional
     @Override
-    public void delete(Long id) {
+    public void deleteProfile(Long id) {
         userRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public boolean isDuplicated(java.lang.String email) {
+    public boolean isDuplicated(String email) {
         return userRepository.existsByEmail(email);
     }
 
 
     @Transactional(readOnly = true)
     @Override
-    public User findByEmail(java.lang.String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
     }

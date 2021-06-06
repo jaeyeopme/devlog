@@ -11,9 +11,9 @@ public interface UserService {
 
     User findByEmail(String email);
 
-    void updateUserProfile(User user, UserUpdateRequest userUpdateRequest);
+    void updateProfile(User user, UserUpdateRequest userUpdateRequest);
 
-    void delete(Long id);
+    void deleteProfile(Long id);
 
     boolean isDuplicated(String email);
 
