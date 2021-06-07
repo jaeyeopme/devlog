@@ -5,7 +5,7 @@ import io.devlog.devlog.comment.dto.CommentRequest;
 
 public interface CommentService {
 
-    void write(Comment comment);
+    Comment write(Comment comment);
 
     Comment findById(Long id);
 
