@@ -5,7 +5,7 @@ import io.devlog.devlog.post.dto.PostRequest;
 
 public interface PostService {
 
-    void write(Post post);
+    Post write(Post post);
 
     Post findById(Long id);
 
