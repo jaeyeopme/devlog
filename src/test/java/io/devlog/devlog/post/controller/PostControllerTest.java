@@ -24,7 +24,6 @@ import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
 import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_NOT_FOUND_EXCEPTION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -127,8 +126,6 @@ class PostControllerTest {
 
         given(postService.findById(any())).willReturn(myPost);
 
-        willDoNothing().given(postService).modify(myPost, postRequest);
-
         MockHttpServletRequestBuilder requestBuilder = put(POST_API_URI + "/{id}", postId)
                 .with(createPrincipal())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -181,7 +178,6 @@ class PostControllerTest {
         Post myPost = PostRequest.toEntity(postRequest, user);
 
         given(postService.findById(any())).willReturn(myPost);
-        willDoNothing().given(postService).deleteById(postId);
 
         MockHttpServletRequestBuilder requestBuilder = delete(POST_API_URI + "/{id}", postId)
                 .with(createPrincipal());
