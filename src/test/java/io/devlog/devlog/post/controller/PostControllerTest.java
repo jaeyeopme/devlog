@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -156,13 +157,13 @@ class PostControllerTest {
                 .andExpect(status().reason("접근 권한이 없습니다."));
     }
 
+    @WithMockUser
     @DisplayName("사용자가 존재하지 않은 게시글을 수정할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void modifyNonExistPost() throws Exception {
         given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
 
         MockHttpServletRequestBuilder requestBuilder = put(POST_API_URI + "/{id}", postId)
-                .with(createPrincipal())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(createPostRequestContent());
 
