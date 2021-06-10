@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static io.devlog.devlog.comment.controller.CommentController.COMMENT_API_URI;
 import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
 import static org.springframework.http.HttpMethod.GET;
@@ -44,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(GET, USER_API_URI + "/verify-token/**").anonymous()
                 .mvcMatchers(GET, USER_API_URI + "/duplicate/**").anonymous()
                 .mvcMatchers(GET, POST_API_URI + "/**").permitAll()
+                .mvcMatchers(GET, COMMENT_API_URI + "/**").permitAll()
                 .mvcMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
                 .httpBasic();
