@@ -43,6 +43,17 @@ class PostControllerTest {
     private PostRequest postRequest;
     private User user;
     private User anotherUser;
+    RequestPostProcessor createPrincipal() {
+        return SecurityMockMvcRequestPostProcessors.user(new PrincipalDetails(user));
+    }
+
+    String createPostRequestContent() throws JsonProcessingException {
+        return objectMapper.writeValueAsString(postRequest);
+    }
+
+    String createPostResponseContent(Post post) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(PostResponse.of(post));
+    }
 
     @BeforeEach
     void setUp() {
@@ -64,21 +75,9 @@ class PostControllerTest {
                 .build();
     }
 
-    RequestPostProcessor createPrincipal() {
-        return SecurityMockMvcRequestPostProcessors.user(new PrincipalDetails(user));
-    }
-
-    String createPostRequestContent() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(postRequest);
-    }
-
-    String createPostResponseContent(Post post) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(PostResponse.of(post));
-    }
-
-    @DisplayName("게시글을 작성할 경우 HTTP 상태코드 201이 반환된다.")
+    @DisplayName("사용자가 게시글을 작성할 경우 HTTP 상태코드 201이 반환된다.")
     @Test
-    void write() throws Exception {
+    void writeNewPost() throws Exception {
         given(postService.write(any())).willReturn(any());
 
         MockHttpServletRequestBuilder content = post(POST_API_URI)
@@ -87,11 +86,11 @@ class PostControllerTest {
                 .content(createPostRequestContent());
 
         mockMvc.perform(content)
-                .andExpect(status().isCreated())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isCreated());
     }
 
-    @DisplayName("존재하는 게시글을 조회할 경우 HTTP 상태코드 200과 PostResponse 를 반환한다.")
+    @DisplayName("사용자가 존재하는 게시글을 조회할 경우 HTTP 상태코드 200과 PostResponse 를 반환한다.")
     @Test
     void getExistPost() throws Exception {
         Post post = PostRequest.toEntity(postRequest, user);
@@ -107,7 +106,7 @@ class PostControllerTest {
                 .andExpect(content().json(createPostResponseContent(post)));
     }
 
-    @DisplayName("존재하지 않은 게시글을 조회할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
+    @DisplayName("사용자가 존재하지 않은 게시글을 조회할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void getNonExistPost() throws Exception {
         given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
@@ -188,6 +187,20 @@ class PostControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @DisplayName("사용자가 존재하지 않은 게시글을 삭제할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
+    @Test
+    void deleteNonExistPost() throws Exception {
+        given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
+
+        MockHttpServletRequestBuilder requestBuilder = delete(POST_API_URI + "/{id}", postId)
+                .with(createPrincipal());
+
+        mockMvc.perform(requestBuilder)
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason("게시글을 찾을 수 없습니다."));
+    }
+
     @DisplayName("사용자가 본인이 작성하지 않은 포스트를 삭제할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void deleteAnotherUserPost() throws Exception {
@@ -204,17 +217,4 @@ class PostControllerTest {
                 .andExpect(status().reason("접근 권한이 없습니다."));
     }
 
-    @DisplayName("사용자가 존재하지 않은 게시글을 삭제할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
-    @Test
-    void deleteNonExistPost() throws Exception {
-        given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
-
-        MockHttpServletRequestBuilder requestBuilder = delete(POST_API_URI + "/{id}", postId)
-                .with(createPrincipal());
-
-        mockMvc.perform(requestBuilder)
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(status().reason("게시글을 찾을 수 없습니다."));
-    }
 }
