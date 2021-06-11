@@ -23,32 +23,33 @@ class GeneralUserServiceTest {
 
     @Mock
     UserRepository userRepository;
-
     @InjectMocks
     GeneralUserService userService;
-
     private UserUpdateRequest userUpdateRequest;
     private User user;
 
     @BeforeEach
     void setUp() {
+        userUpdateRequest = UserUpdateRequest.builder()
+                .nickname("updateNickname")
+                .build();
+
         user = User.builder()
                 .email("email@email.com")
                 .password("Password1234!")
                 .nickname("nickname")
-                .build();
-
-        userUpdateRequest = UserUpdateRequest.builder()
-                .nickname("nickname2")
                 .build();
     }
 
     @DisplayName("회원가입에 성공한다.")
     @Test
     void register() {
+        assertTrue(user.getAuthorities().isEmpty());
+
         userService.register(user);
 
         then(userRepository).should(only()).save(any());
+        assertFalse(user.getAuthorities().isEmpty());
     }
 
     @DisplayName("존재하는 사용자의 ID로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
@@ -62,7 +63,7 @@ class GeneralUserServiceTest {
         then(userRepository).should(only()).findById(any());
     }
 
-    @DisplayName("존재하지 않는 사용자의 ID로 사용자를 조회하는 경우 실패한다.")
+    @DisplayName("존재하지 않은 사용자의 ID로 사용자를 조회하는 경우 실패한다.")
     @Test
     void findByIdWithNotExistId() {
         given(userRepository.findById(any())).willReturn(Optional.empty());
@@ -125,7 +126,7 @@ class GeneralUserServiceTest {
         then(userRepository).should(only()).findByEmail(any());
     }
 
-    @DisplayName("존재하지 않는 사용자의 이메일로 사용자를 조회하는 경우 실패한다.")
+    @DisplayName("존재하지 않는 사용자의 이메일로 사용자를 조회하는 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void findByIdWithNotExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.empty());
