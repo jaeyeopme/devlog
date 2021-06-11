@@ -54,7 +54,7 @@ class GeneralUserServiceTest {
 
     @DisplayName("존재하는 사용자의 ID로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
     @Test
-    void findByIdWithExistId() {
+    void findUserByExistUserId() {
         given(userRepository.findById(any())).willReturn(Optional.of(user));
 
         User findUser = userService.findById(any());
@@ -65,7 +65,7 @@ class GeneralUserServiceTest {
 
     @DisplayName("존재하지 않은 사용자의 ID로 사용자를 조회하는 경우 실패한다.")
     @Test
-    void findByIdWithNotExistId() {
+    void findUserByNonExistUserId() {
         given(userRepository.findById(any())).willReturn(Optional.empty());
 
         assertThrows(USER_NOT_FOUND_EXCEPTION.getClass(), () -> userService.findById(any()));
@@ -106,7 +106,7 @@ class GeneralUserServiceTest {
 
     @DisplayName("존재하지 않는 이메일로 중복검사를 하는 경우 성공한다.")
     @Test
-    void duplicateCheckWithNotDuplicatedEmail() {
+    void duplicateCheckWithNonDuplicatedEmail() {
         given(userRepository.existsByEmail(any())).willReturn(false);
 
         boolean duplicated = userService.isDuplicated(any());
@@ -117,7 +117,7 @@ class GeneralUserServiceTest {
 
     @DisplayName("존재하는 사용자의 이메일로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
     @Test
-    void findByIdWithExistEmail() {
+    void findUserWithExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
 
         User findUser = userService.findByEmail(any());
@@ -128,7 +128,7 @@ class GeneralUserServiceTest {
 
     @DisplayName("존재하지 않는 사용자의 이메일로 사용자를 조회하는 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
-    void findByIdWithNotExistEmail() {
+    void findUserByNonExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.empty());
 
         assertThrows(USER_NOT_FOUND_EXCEPTION.getClass(), () -> userService.findByEmail(any()));
