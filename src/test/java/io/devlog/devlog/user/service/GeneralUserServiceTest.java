@@ -48,8 +48,8 @@ class GeneralUserServiceTest {
 
         userService.register(user);
 
-        then(userRepository).should(only()).save(any());
         assertFalse(user.getAuthorities().isEmpty());
+        then(userRepository).should(only()).save(any());
     }
 
     @DisplayName("존재하는 사용자의 ID로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
