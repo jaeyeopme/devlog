@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.devlog'
-version = '0.0.1-SNAPSHOT'
+version = 'v1'
 sourceCompatibility = '11'
 
 repositories {
@@ -65,4 +65,8 @@ bootJar {
     from("${asciidoctor.outputDir}/html5") {
         into 'static/docs'
     }
+}
+
+jar {
+    enabled = false
 }
