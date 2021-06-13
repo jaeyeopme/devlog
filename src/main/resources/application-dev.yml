@@ -13,18 +13,18 @@ spring:
     type: redis
 
   redis:
-    cache:
-      host: ENC(wOE0C4t/QQZ1xQ2C+78CREq5wDLhNASC)
-      port: ENC(WA37eyHWagVJsRJUuQyo5A==)
-      password: ENC(M5a8/CUZrpchoR+uz9pj2BTPzvMHu7ZU)
-
     session:
-      host: ENC(XfGxkVFSaG7hBakUenpnQedw8x2NABC0)
-      port: ENC(gL/w90O1H/m/NQ4nei8FPw==)
-      password: ENC(BlWoa+bOuRhpHMb5Sz1xLmiaaJ0fasvC)
+      host: ENC(LIr0A1A0XlK4TIDJjBNYBYHn3e5ThgOn)
+      port: ENC(zhpvCtCt8vAZc1Xxc/QOnQ==)
+      password: ENC(7xYc5CnMZAwpPPQgY97rkZ4OrtGJzJzN)
+
+    cache:
+      host: ENC(9ZczRWLSjlKV5PE/8nqvjeahUveB1qFj)
+      port: ENC(rWoLJ96FB7e3kHgp+SbNTg==)
+      password: ENC(YFSpn9ISnl5NGI3JSBhBzg3KsfGqBCYc)
 
   datasource:
-    url: jdbc:h2:mem:devlog;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:devlog
     driver-class-name: org.h2.Driver
     username: sa
 
