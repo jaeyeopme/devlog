@@ -46,14 +46,14 @@ class GeneralPostServiceTest {
     @DisplayName("게시글을 작성한다.")
     @Test
     void writePost() {
-        postRepository.save(post);
+        postService.write(post);
 
         then(postRepository).should(only()).save(any());
     }
 
     @DisplayName("존재하는 게시글의 ID로 게시글을 조회하는 경우 조회된 게시글을 반환한다.")
     @Test
-    void findUserByExistUserId() {
+    void findPostByExistPostId() {
         given(postRepository.findById(any())).willReturn(Optional.of(post));
 
         Post findPost = postService.findById(any());
@@ -64,7 +64,7 @@ class GeneralPostServiceTest {
 
     @DisplayName("존재하지 않은 게시글의 ID로 게시글을 조회하는 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
-    void findUserByNonExistUserId() {
+    void findPostByNonExistPostId() {
         given(postRepository.findById(any())).willReturn(Optional.empty());
 
         assertThrows(POST_NOT_FOUND_EXCEPTION.getClass(), () -> postService.findById(any()));
@@ -86,9 +86,7 @@ class GeneralPostServiceTest {
 
     @DisplayName("게시글을 삭제한다.")
     @Test
-    void deletePostByUserId() {
-        willDoNothing().given(postRepository).deleteById(any());
-
+    void deletePostByPostId() {
         postService.deleteById(any());
 
         then(postRepository).should(only()).deleteById(any());
