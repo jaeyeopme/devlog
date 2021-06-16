@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -40,15 +41,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("SESSION");
 
         http.authorizeRequests(authorize -> authorize
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).anonymous()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .mvcMatchers(POST, USER_API_URI).anonymous()
                 .mvcMatchers(GET, USER_API_URI + "/verify-token/**").anonymous()
                 .mvcMatchers(GET, USER_API_URI + "/duplicate/**").anonymous()
                 .mvcMatchers(GET, POST_API_URI + "/**").permitAll()
                 .mvcMatchers(GET, COMMENT_API_URI + "/**").permitAll()
-                .mvcMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated())
                 .httpBasic();
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web
+                .ignoring()
+                .requestMatchers(
+                        PathRequest.toStaticResources().atCommonLocations(),
+                        PathRequest.toH2Console());
     }
 
 }
