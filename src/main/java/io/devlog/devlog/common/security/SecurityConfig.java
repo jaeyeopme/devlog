@@ -1,6 +1,5 @@
 package io.devlog.devlog.common.security;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,6 @@ import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
-@RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -25,6 +23,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring()
+                .requestMatchers(
+                        PathRequest.toStaticResources().atCommonLocations());
     }
 
     @Override
@@ -41,23 +46,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("SESSION");
 
         http.authorizeRequests(authorize -> authorize
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .mvcMatchers(POST, USER_API_URI).anonymous()
-                .mvcMatchers(GET, USER_API_URI + "/verify-token/**").anonymous()
-                .mvcMatchers(GET, USER_API_URI + "/duplicate/**").anonymous()
+                .mvcMatchers("/h2-console").permitAll()
+                .mvcMatchers(POST, USER_API_URI).permitAll()
+                .mvcMatchers(USER_API_URI + "/verify-token/**").permitAll()
+                .mvcMatchers(GET, USER_API_URI + "/duplicate/**").permitAll()
                 .mvcMatchers(GET, POST_API_URI + "/**").permitAll()
                 .mvcMatchers(GET, COMMENT_API_URI + "/**").permitAll()
                 .anyRequest().authenticated())
                 .httpBasic();
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web
-                .ignoring()
-                .requestMatchers(
-                        PathRequest.toStaticResources().atCommonLocations(),
-                        PathRequest.toH2Console());
     }
 
 }
