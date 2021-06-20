@@ -14,14 +14,14 @@ spring:
 
   redis:
     session:
-      host: ENC(LIr0A1A0XlK4TIDJjBNYBYHn3e5ThgOn)
-      port: ENC(zhpvCtCt8vAZc1Xxc/QOnQ==)
-      password: ENC(7xYc5CnMZAwpPPQgY97rkZ4OrtGJzJzN)
+      host: ${REDIS_SESSION_HOST}
+      port: ${REDIS_SESSION_PORT}
+      password: ${REDIS_SESSION_PASSWORD}
 
     cache:
-      host: ENC(9ZczRWLSjlKV5PE/8nqvjeahUveB1qFj)
-      port: ENC(rWoLJ96FB7e3kHgp+SbNTg==)
-      password: ENC(YFSpn9ISnl5NGI3JSBhBzg3KsfGqBCYc)
+      host: ${REDIS_CACHE_HOST}
+      port: ${REDIS_CACHE_PORT}
+      password: ${REDIS_CACHE_PASSWORD}
 
   datasource:
     url: jdbc:h2:mem:devlog
@@ -43,8 +43,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ENC(TMLzCuf3oeMERcFoQnUBRepEAeap7EK0)
-    password: ENC(9NFkMGtb4LUswKKnPQl27OZp/8MYc299wjiEwcK0xgk=)
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     protocol: smtp
     tls: true
     properties.mail.smtp:
