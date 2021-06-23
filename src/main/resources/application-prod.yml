@@ -1,8 +1,21 @@
 # 운영
 
+logging:
+  level:
+    root: info
+
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: ENC(LCtXH+ZDbwuB7XwH0mkN9nERhjKQ/HV7p0CzlqdmK8uu6zN0H4s0jUcU8ivrg6Dt)
     username: ENC(/U8VR69CMS4FsF9eDARlvw==)
     password: ENC(bndyOiI0u0tQ+aEmkQu61g==)
+
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

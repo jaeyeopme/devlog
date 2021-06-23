@@ -5,31 +5,15 @@ logging:
     root: debug
 
 spring:
-  output:
-    ansi:
-      enabled: always
-
-  cache:
-    type: redis
-
-  redis:
-    session:
-      host: ${REDIS_SESSION_HOST}
-      port: ${REDIS_SESSION_PORT}
-      password: ${REDIS_SESSION_PASSWORD}
-
-    cache:
-      host: ${REDIS_CACHE_HOST}
-      port: ${REDIS_CACHE_PORT}
-      password: ${REDIS_CACHE_PASSWORD}
-
   datasource:
     url: jdbc:h2:mem:devlog
     driver-class-name: org.h2.Driver
     username: sa
 
-  devtools:
-    add-properties: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   jpa:
     database: h2
@@ -39,20 +23,3 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    protocol: smtp
-    tls: true
-    properties.mail.smtp:
-      auth: true
-      starttls.enable: true
-      ssl.trust: smtp.gmail.com
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
