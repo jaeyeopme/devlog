@@ -7,9 +7,9 @@ logging:
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ENC(LCtXH+ZDbwuB7XwH0mkN9nERhjKQ/HV7p0CzlqdmK8uu6zN0H4s0jUcU8ivrg6Dt)
-    username: ENC(/U8VR69CMS4FsF9eDARlvw==)
-    password: ENC(bndyOiI0u0tQ+aEmkQu61g==)
+    url: ${MARIADB_URL}
+    username: ${MARIADB_USERNAME}
+    password: ${MARIADB_PASSWORD}
 
   jpa:
     database: mysql
@@ -18,4 +18,4 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+         format_sql: true

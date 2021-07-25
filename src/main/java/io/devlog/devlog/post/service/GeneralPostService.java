@@ -10,7 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.devlog.devlog.common.redis.RedisConfig.POST;
+import static io.devlog.devlog.common.redis.RedisConfigConstant.POST;
 import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_NOT_FOUND_EXCEPTION;
 
 @RequiredArgsConstructor

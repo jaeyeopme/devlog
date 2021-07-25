@@ -1,8 +1,11 @@
 package io.devlog.devlog.user.exception;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserResponseStatusException {
 
     public static ResponseStatusException DUPLICATED_EMAIL_EXCEPTION = new ResponseStatusException(HttpStatus.CONFLICT, "중복된 이메일 입니다.");

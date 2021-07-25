@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-import static io.devlog.devlog.common.email.EmailConfig.*;
-import static io.devlog.devlog.common.redis.RedisConfig.EMAIL_TOKEN_EXPIRE_TIME;
+import static io.devlog.devlog.common.email.EmailConstant.*;
+import static io.devlog.devlog.common.redis.RedisConfigConstant.EMAIL_TOKEN_EXPIRE_TIME;
 import static io.devlog.devlog.user.exception.UserResponseStatusException.INVALID_TOKEN_EXCEPTION;
 
 @Slf4j
@@ -40,11 +40,9 @@ public class EmailTokenService {
 
     // 인증 메일 내용 생성
     public String buildContent(String token) {
-        return new StringBuilder()
-                .append(DOMAIN_NAME)
-                .append(EMAIL_CONFIRM_URL)
-                .append("/" + token)
-                .toString();
+        return DOMAIN_NAME +
+                EMAIL_CONFIRM_URL +
+                "/" + token;
     }
 
     // 인증 토큰 생성 및 저장

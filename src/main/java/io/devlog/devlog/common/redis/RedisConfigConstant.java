@@ -1,6 +1,10 @@
 package io.devlog.devlog.common.redis;
 
-public class RedisConfig {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class RedisConfigConstant {
 
     public static final String POST = "POST";
     public static final String COMMENT = "COMMENT";

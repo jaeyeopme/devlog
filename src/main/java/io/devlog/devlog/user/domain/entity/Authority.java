@@ -9,10 +9,11 @@ public enum Authority implements GrantedAuthority {
     USER(Role.USER),
     ADMIN(Role.ADMIN);
 
+    public static final String DEFAULT_ROLE_PREFIX = "ROLE_";
     private final String authority;
 
     Authority(Role role) {
-        this.authority = "ROLE_" + role;
+        this.authority = DEFAULT_ROLE_PREFIX + role;
     }
 
 }

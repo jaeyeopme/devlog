@@ -1,6 +1,5 @@
 package io.devlog.devlog.user.dto;
 
-import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.domain.entity.User;
 import lombok.*;
 

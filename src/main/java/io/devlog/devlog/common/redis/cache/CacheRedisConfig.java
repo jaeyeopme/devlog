@@ -18,12 +18,14 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.devlog.devlog.common.redis.RedisConfig.*;
+import static io.devlog.devlog.common.redis.RedisConfigConstant.*;
 
 @EnableCaching
 @Configuration
 public class CacheRedisConfig {
 
+    public static final String CACHE_REDIS_TEMPLATE_NAME = "cacheRedisTemplate";
+    public static final String CACHE_REDIS_FACTORY_NAME = "cacheRedisFactory";
     @Value("${spring.redis.cache.host}")
     private String host;
 
@@ -34,7 +36,7 @@ public class CacheRedisConfig {
     private String password;
 
 
-    @Bean(name = "cacheRedisFactory")
+    @Bean(CACHE_REDIS_FACTORY_NAME)
     public RedisConnectionFactory cacheRedisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
@@ -45,7 +47,7 @@ public class CacheRedisConfig {
 
     @Bean
     public RedisCacheManager redisCacheManager(
-            @Qualifier(value = "cacheRedisFactory") RedisConnectionFactory redisCacheFactory) {
+            @Qualifier(value = CACHE_REDIS_FACTORY_NAME) RedisConnectionFactory redisCacheFactory) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
@@ -59,9 +61,9 @@ public class CacheRedisConfig {
                 .build();
     }
 
-    @Bean(name = "cacheRedisTemplate")
+    @Bean(name = CACHE_REDIS_TEMPLATE_NAME)
     public StringRedisTemplate cacheRedisTemplate(
-            @Qualifier(value = "cacheRedisFactory") RedisConnectionFactory redisCacheFactory) {
+            @Qualifier(value = CACHE_REDIS_FACTORY_NAME) RedisConnectionFactory redisCacheFactory) {
         return new StringRedisTemplate(redisCacheFactory);
     }
 

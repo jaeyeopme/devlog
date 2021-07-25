@@ -53,7 +53,7 @@ public class UserController {
 
     @PutMapping
     public ResponseEntity<UserResponse> updateMyProfile(@Valid @RequestBody UserUpdateRequest userUpdateRequest,
-                                               @AuthenticationPrincipal PrincipalDetails userDetails) {
+                                                        @AuthenticationPrincipal PrincipalDetails userDetails) {
         userService.updateProfile(userDetails.getUser(), userUpdateRequest);
         return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
     }
@@ -61,7 +61,6 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<HttpStatus> deleteMyProfile(@AuthenticationPrincipal PrincipalDetails userDetails) {
         userService.deleteProfile(userDetails.getUser().getId());
-
         return RESPONSE_OK;
     }
 

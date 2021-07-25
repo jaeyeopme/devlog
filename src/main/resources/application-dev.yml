@@ -6,8 +6,8 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:devlog
     driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:devlog
     username: sa
 
   h2:

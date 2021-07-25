@@ -9,13 +9,16 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static io.devlog.devlog.common.redis.cache.CacheRedisConfig.CACHE_REDIS_TEMPLATE_NAME;
+
 @Slf4j
 @Service
 public class TokenRedisService {
 
     private final StringRedisTemplate cacheRedisTemplate;
 
-    public TokenRedisService(@Qualifier(value = "cacheRedisTemplate") StringRedisTemplate cacheRedisTemplate) {
+    public TokenRedisService(@Qualifier(value = CACHE_REDIS_TEMPLATE_NAME)
+                                     StringRedisTemplate cacheRedisTemplate) {
         this.cacheRedisTemplate = cacheRedisTemplate;
     }
 
