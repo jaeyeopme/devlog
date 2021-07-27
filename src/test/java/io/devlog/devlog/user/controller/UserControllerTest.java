@@ -91,7 +91,7 @@ class UserControllerTest {
     @DisplayName("중복되지 않은 이메일로 회원가입한 경우 HTTP 상태코드 201을 반환한다.")
     @Test
     void registerNonDuplicatedEmail() throws Exception {
-        given(userService.isDuplicated(any())).willReturn(false);
+        given(userService.checkDuplicationEmail(any())).willReturn(false);
 
         MockHttpServletRequestBuilder requestBuilder = post(USER_API_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +105,7 @@ class UserControllerTest {
     @DisplayName("중복된 이메일로 회원가입한 경우 HTTP 상태코드 409를 반환한다.")
     @Test
     void registerDuplicatedEmail() throws Exception {
-        given(userService.isDuplicated(any())).willReturn(true);
+        given(userService.checkDuplicationEmail(any())).willReturn(true);
 
         MockHttpServletRequestBuilder requestBuilder = post(USER_API_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -210,7 +210,7 @@ class UserControllerTest {
     @DisplayName("중복된 이메일이 없을 경우 HTTP 상태코드 200을 반환한다.")
     @Test
     void duplicateCheckWithNonDuplicatedEmail() throws Exception {
-        given(userService.isDuplicated(any())).willReturn(false);
+        given(userService.checkDuplicationEmail(any())).willReturn(false);
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/duplicate/{email}", email);
 
@@ -222,7 +222,7 @@ class UserControllerTest {
     @DisplayName("이메일이 중복되었을 경우 HTTP 상태코드 409와 메시지를 반환한다.")
     @Test
     void duplicateCheckWithDuplicatedEmail() throws Exception {
-        given(userService.isDuplicated(any())).willReturn(true);
+        given(userService.checkDuplicationEmail(any())).willReturn(true);
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/duplicate/{email}", email);
 

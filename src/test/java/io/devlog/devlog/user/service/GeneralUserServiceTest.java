@@ -98,7 +98,7 @@ class GeneralUserServiceTest {
     void duplicateCheckWithDuplicatedEmail() {
         given(userRepository.existsByEmail(any())).willReturn(true);
 
-        boolean duplicated = userService.isDuplicated(any());
+        boolean duplicated = userService.checkDuplicationEmail(any());
 
         assertTrue(duplicated);
         then(userRepository).should(only()).existsByEmail(any());
@@ -109,7 +109,7 @@ class GeneralUserServiceTest {
     void duplicateCheckWithNonDuplicatedEmail() {
         given(userRepository.existsByEmail(any())).willReturn(false);
 
-        boolean duplicated = userService.isDuplicated(any());
+        boolean duplicated = userService.checkDuplicationEmail(any());
 
         assertFalse(duplicated);
         then(userRepository).should(only()).existsByEmail(any());

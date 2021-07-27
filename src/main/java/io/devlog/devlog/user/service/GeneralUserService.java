@@ -44,7 +44,7 @@ public class GeneralUserService implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public boolean isDuplicated(String email) {
+    public boolean checkDuplicationEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 

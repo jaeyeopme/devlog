@@ -33,7 +33,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> registration(@Valid @RequestBody UserRegisterRequest request) {
-        if (userService.isDuplicated(request.getEmail()))
+        if (userService.checkDuplicationEmail(request.getEmail()))
             throw DUPLICATED_EMAIL_EXCEPTION;
 
         userService.register(User.from(request, passwordEncoder));
@@ -66,8 +66,8 @@ public class UserController {
     }
 
     @GetMapping("/duplicate/{email}")
-    public ResponseEntity<HttpStatus> duplicateCheck(@PathVariable String email) {
-        if (userService.isDuplicated(email))
+    public ResponseEntity<HttpStatus> checkDuplication(@PathVariable String email) {
+        if (userService.checkDuplicationEmail(email))
             throw DUPLICATED_EMAIL_EXCEPTION;
 
         return RESPONSE_OK;
