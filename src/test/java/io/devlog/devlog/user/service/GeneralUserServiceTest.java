@@ -1,5 +1,7 @@
 package io.devlog.devlog.user.service;
 
+import io.devlog.devlog.error.user.UserEmailNotFoundException;
+import io.devlog.devlog.error.user.UserIdNotFoundException;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.domain.repository.UserRepository;
 import io.devlog.devlog.user.dto.UserUpdateRequest;
@@ -13,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static io.devlog.devlog.user.exception.UserResponseStatusException.USER_NOT_FOUND_EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -68,7 +69,7 @@ class GeneralUserServiceTest {
     void findUserByNonExistUserId() {
         given(userRepository.findById(any())).willReturn(Optional.empty());
 
-        assertThrows(USER_NOT_FOUND_EXCEPTION.getClass(), () -> userService.findById(any()));
+        assertThrows(UserIdNotFoundException.class, () -> userService.findById(any()));
 
         then(userRepository).should(only()).findById(any());
     }
@@ -131,7 +132,7 @@ class GeneralUserServiceTest {
     void findUserByNonExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.empty());
 
-        assertThrows(USER_NOT_FOUND_EXCEPTION.getClass(), () -> userService.findByEmail(any()));
+        assertThrows(UserEmailNotFoundException.class, () -> userService.findByEmail(any()));
 
         then(userRepository).should(only()).findByEmail(any());
     }

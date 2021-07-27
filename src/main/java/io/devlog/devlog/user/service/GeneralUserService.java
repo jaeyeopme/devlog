@@ -1,5 +1,7 @@
 package io.devlog.devlog.user.service;
 
+import io.devlog.devlog.error.user.UserEmailNotFoundException;
+import io.devlog.devlog.error.user.UserIdNotFoundException;
 import io.devlog.devlog.user.domain.entity.Authority;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.domain.repository.UserRepository;
@@ -7,8 +9,6 @@ import io.devlog.devlog.user.dto.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static io.devlog.devlog.user.exception.UserResponseStatusException.USER_NOT_FOUND_EXCEPTION;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +27,7 @@ public class GeneralUserService implements UserService {
     @Override
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
+                .orElseThrow(() -> new UserIdNotFoundException(id));
     }
 
     @Transactional
@@ -53,7 +53,7 @@ public class GeneralUserService implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> USER_NOT_FOUND_EXCEPTION);
+                .orElseThrow(() -> new UserEmailNotFoundException(email));
     }
 
     @Transactional

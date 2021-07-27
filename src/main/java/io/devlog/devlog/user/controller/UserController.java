@@ -1,6 +1,7 @@
 package io.devlog.devlog.user.controller;
 
 import io.devlog.devlog.common.email.EmailTokenService;
+import io.devlog.devlog.error.user.UserDataDuplicationException;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRegisterRequest;
@@ -32,9 +33,9 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registration(@Valid @RequestBody UserRegisterRequest request) {
+    public ResponseEntity<HttpStatus> register(@Valid @RequestBody UserRegisterRequest request) {
         if (userService.checkDuplicationEmail(request.getEmail()))
-            throw DUPLICATED_EMAIL_EXCEPTION;
+            throw new UserDataDuplicationException();
 
         userService.register(User.from(request, passwordEncoder));
         emailTokenService.sendEmailToken(request.getEmail());
@@ -68,7 +69,7 @@ public class UserController {
     @GetMapping("/duplicate/{email}")
     public ResponseEntity<HttpStatus> checkDuplication(@PathVariable String email) {
         if (userService.checkDuplicationEmail(email))
-            throw DUPLICATED_EMAIL_EXCEPTION;
+            throw new UserDataDuplicationException();
 
         return RESPONSE_OK;
     }

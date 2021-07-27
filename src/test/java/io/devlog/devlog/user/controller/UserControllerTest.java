@@ -113,8 +113,8 @@ class UserControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
-                .andExpect(status().isConflict())
-                .andExpect(status().reason("중복된 이메일 입니다."));
+                .andExpect(status().isConflict());
+        // TODO: 21. 7. 27. Expect Content
     }
 
     @WithMockUser
