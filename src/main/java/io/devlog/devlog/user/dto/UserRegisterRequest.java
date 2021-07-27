@@ -1,8 +1,6 @@
 package io.devlog.devlog.user.dto;
 
-import io.devlog.devlog.user.domain.entity.User;
 import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +9,9 @@ import javax.validation.constraints.Pattern;
 /**
  * ObjectMapper 는 @RequestBody 가 Property 로 구현되어 있을때 Getter 나 Setter 로 필드명을 매칭하며 reflection 을 사용해서 값을 주입합니다.
  * Property 로 구현되지 않았거나 생성을 위임한 경우가 아니라면 기본 생성자로 생성됩니다.
+ *
+ * @Getter Serialize
+ * @NoArgsConstructor Deserialize
  */
 @Getter
 @Builder
@@ -30,13 +31,5 @@ public class UserRegisterRequest {
 
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
-
-    public static User toEntity(UserRegisterRequest userRegisterRequest, PasswordEncoder passwordEncoder) {
-        return User.builder()
-                .email(userRegisterRequest.email)
-                .password(passwordEncoder.encode(userRegisterRequest.password))
-                .nickname(userRegisterRequest.nickname)
-                .build();
-    }
 
 }

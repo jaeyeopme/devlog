@@ -29,8 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web.ignoring()
                 .requestMatchers(
-                        PathRequest.toStaticResources().atCommonLocations(),
-                        PathRequest.toH2Console());
+                        PathRequest.toStaticResources().atCommonLocations());
     }
 
     @Override
@@ -47,8 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("SESSION");
 
         http.authorizeRequests(authorize -> authorize
+                .mvcMatchers(GET, "/h2-console/**").permitAll()
                 .mvcMatchers(POST, USER_API_URI).permitAll()
-                .mvcMatchers(USER_API_URI + "/verify-token/**").permitAll()
+                .mvcMatchers(GET, USER_API_URI + "/verify-token/**").permitAll()
                 .mvcMatchers(GET, USER_API_URI + "/duplicate/**").permitAll()
                 .mvcMatchers(GET, POST_API_URI + "/**").permitAll()
                 .mvcMatchers(GET, COMMENT_API_URI + "/**").permitAll()

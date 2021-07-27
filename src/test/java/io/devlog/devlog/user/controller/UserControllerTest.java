@@ -39,17 +39,24 @@ class UserControllerTest {
     private final Long userId = 1L;
     private final String email = "email@email.com";
     private final String emailToken = "emailToken";
+
     @MockBean
     UserService userService;
+
     @MockBean
     EmailTokenService emailTokenService;
+
     @MockBean
     PasswordEncoder passwordEncoder;
+
     @Autowired
     MockMvc mockMvc;
+
     @Autowired
     ObjectMapper objectMapper;
+
     private UserRegisterRequest userRegisterRequest;
+
     private UserUpdateRequest userUpdateRequest;
 
     RequestPostProcessor createPrincipal(User user) {
@@ -65,7 +72,7 @@ class UserControllerTest {
     }
 
     String createUserResponseContent(User user) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(UserResponse.of(user));
+        return objectMapper.writeValueAsString(UserResponse.from(user));
     }
 
     @BeforeEach

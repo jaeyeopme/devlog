@@ -32,8 +32,8 @@ public class GeneralUserService implements UserService {
 
     @Transactional
     @Override
-    public void updateProfile(User user, UserUpdateRequest userUpdateRequest) {
-        user.updateProfile(userUpdateRequest);
+    public void updateProfile(User user, UserUpdateRequest request) {
+        user.updateProfile(request);
     }
 
     @Transactional

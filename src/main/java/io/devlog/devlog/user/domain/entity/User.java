@@ -3,11 +3,13 @@ package io.devlog.devlog.user.domain.entity;
 import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.common.jpa.BaseTimeEntity;
 import io.devlog.devlog.post.domain.entity.Post;
+import io.devlog.devlog.user.dto.UserRegisterRequest;
 import io.devlog.devlog.user.dto.UserUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -15,9 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Protected 수준의 기본 생성자까지 JPA 에서 찾을 수 있습니다.
+ * Protected 수준의 기본 생성자까지 JPA  에서 찾을 수 있습니다.
  */
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -56,6 +57,14 @@ public class User extends BaseTimeEntity {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+    }
+
+    public static User from(UserRegisterRequest request, PasswordEncoder passwordEncoder) {
+        return User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .nickname(request.getNickname())
+                .build();
     }
 
     public void setEnabled() {

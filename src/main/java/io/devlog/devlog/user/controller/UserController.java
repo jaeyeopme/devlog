@@ -2,6 +2,7 @@ package io.devlog.devlog.user.controller;
 
 import io.devlog.devlog.common.email.EmailTokenService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
+import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRegisterRequest;
 import io.devlog.devlog.user.dto.UserResponse;
 import io.devlog.devlog.user.dto.UserUpdateRequest;
@@ -31,31 +32,31 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registration(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-        if (userService.isDuplicated(userRegisterRequest.getEmail()))
+    public ResponseEntity<HttpStatus> registration(@Valid @RequestBody UserRegisterRequest request) {
+        if (userService.isDuplicated(request.getEmail()))
             throw DUPLICATED_EMAIL_EXCEPTION;
 
-        userService.register(UserRegisterRequest.toEntity(userRegisterRequest, passwordEncoder));
-        emailTokenService.sendEmailToken(userRegisterRequest.getEmail());
+        userService.register(User.from(request, passwordEncoder));
+        emailTokenService.sendEmailToken(request.getEmail());
 
         return RESPONSE_CREATED;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> search(@PathVariable Long id) {
-        return ResponseEntity.ok(UserResponse.of(userService.findById(id)));
+        return ResponseEntity.ok(UserResponse.from(userService.findById(id)));
     }
 
     @GetMapping("/my-profile")
     public ResponseEntity<UserResponse> getMyProfile(@AuthenticationPrincipal PrincipalDetails userDetails) {
-        return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
+        return ResponseEntity.ok(UserResponse.from(userDetails.getUser()));
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> updateMyProfile(@Valid @RequestBody UserUpdateRequest userUpdateRequest,
+    public ResponseEntity<UserResponse> updateMyProfile(@Valid @RequestBody UserUpdateRequest request,
                                                         @AuthenticationPrincipal PrincipalDetails userDetails) {
-        userService.updateProfile(userDetails.getUser(), userUpdateRequest);
-        return ResponseEntity.ok(UserResponse.of(userDetails.getUser()));
+        userService.updateProfile(userDetails.getUser(), request);
+        return ResponseEntity.ok(UserResponse.from(userDetails.getUser()));
     }
 
     @DeleteMapping
