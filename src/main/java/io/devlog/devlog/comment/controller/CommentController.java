@@ -33,7 +33,7 @@ public class CommentController {
     public ResponseEntity<HttpStatus> write(@Valid @RequestBody CommentRequest commentRequest,
                                             @AuthenticationPrincipal PrincipalDetails userDetails) {
         Post post = postService.findById(commentRequest.getPostId());
-        commentService.write(CommentRequest.toEntity(commentRequest, post, userDetails.getUser()));
+        commentService.write(Comment.from(commentRequest, post, userDetails.getUser()));
 
         return RESPONSE_CREATED;
     }

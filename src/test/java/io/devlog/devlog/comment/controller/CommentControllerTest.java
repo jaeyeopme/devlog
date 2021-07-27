@@ -128,7 +128,7 @@ class CommentControllerTest {
     @DisplayName("사용자가 존재하는 댓글을 조회할 경우 HTTP 상태코드 200과 CommentResponse 를 반환한다.")
     @Test
     void getExistComment() throws Exception {
-        Comment comment = CommentRequest.toEntity(commentRequest, post, user);
+        Comment comment = Comment.from(commentRequest, post, user);
 
         given(commentService.findById(any())).willReturn(comment);
 
@@ -157,7 +157,7 @@ class CommentControllerTest {
     @DisplayName("사용자가 본인이 작성한 댓글을 수정할 경우 HTTP 상태코드 200과 CommentResponse 를 반환한다.")
     @Test
     void modifyMyComment() throws Exception {
-        Comment myComment = CommentRequest.toEntity(commentRequest, post, user);
+        Comment myComment = Comment.from(commentRequest, post, user);
 
         given(commentService.findById(any())).willReturn(myComment);
 
@@ -176,7 +176,7 @@ class CommentControllerTest {
     @DisplayName("사용자가 본인이 작성하지 않은 댓글을 수정할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void modifyAnotherUserComment() throws Exception {
-        Comment anotherUserComment = CommentRequest.toEntity(commentRequest, post, anotherUser);
+        Comment anotherUserComment = Comment.from(commentRequest, post, anotherUser);
 
         given(commentService.findById(any())).willReturn(anotherUserComment);
 
@@ -210,7 +210,7 @@ class CommentControllerTest {
     @DisplayName("사용자가 본인이 작성한 댓글을 삭제할 경우 HTTP 상태코드 200을 반환한다.")
     @Test
     void deleteMyComment() throws Exception {
-        Comment myComment = CommentRequest.toEntity(commentRequest, post, user);
+        Comment myComment = Comment.from(commentRequest, post, user);
 
         given(commentService.findById(any())).willReturn(myComment);
 
@@ -239,7 +239,7 @@ class CommentControllerTest {
     @DisplayName("사용자가 본인이 작성하지 않은 댓글을 삭제할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void deleteAnotherUserComment() throws Exception {
-        Comment anotherUserComment = CommentRequest.toEntity(commentRequest, post, anotherUser);
+        Comment anotherUserComment = Comment.from(commentRequest, post, anotherUser);
 
         given(commentService.findById(any())).willReturn(anotherUserComment);
 

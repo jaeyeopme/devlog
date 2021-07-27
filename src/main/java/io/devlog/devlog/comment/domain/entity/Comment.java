@@ -37,6 +37,14 @@ public class Comment extends BaseTimeEntity {
         this.author = author;
     }
 
+    public static Comment from(CommentRequest commentRequest, Post post, User author) {
+        return Comment.builder()
+                .content(commentRequest.getContent())
+                .post(post)
+                .author(author)
+                .build();
+    }
+
     public void modify(CommentRequest commentRequest) {
         this.content = commentRequest.getContent();
     }
