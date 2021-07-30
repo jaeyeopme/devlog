@@ -3,6 +3,9 @@ package io.devlog.devlog.user.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.devlog.devlog.common.email.EmailTokenService;
+import io.devlog.devlog.error.ErrorResponse;
+import io.devlog.devlog.error.user.InvalidEmailTokenException;
+import io.devlog.devlog.error.user.UserIdNotFoundException;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRegisterRequest;
@@ -25,7 +28,6 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
 import static io.devlog.devlog.user.exception.UserResponseStatusException.INVALID_TOKEN_EXCEPTION;
-import static io.devlog.devlog.user.exception.UserResponseStatusException.USER_NOT_FOUND_EXCEPTION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -68,6 +70,10 @@ class UserControllerTest {
         return objectMapper.writeValueAsString(UserResponse.from(user));
     }
 
+    String createErrorResponseContent(String message) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(new ErrorResponse(message));
+    }
+
     @BeforeEach
     void setUp() {
         userRegisterRequest = UserRegisterRequest.builder()
@@ -106,8 +112,8 @@ class UserControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
-                .andExpect(status().isConflict());
-        // TODO: 21. 7. 27. Expect Content
+                .andExpect(status().isConflict())
+                .andExpect(content().json(createErrorResponseContent("User's some data is already existed")));
     }
 
     @WithMockUser
@@ -134,13 +140,13 @@ class UserControllerTest {
     @DisplayName("회원가입 되어있지 않은 사용자를 조회할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void searchWithNotExistUser() throws Exception {
-        given(userService.findById(any())).willThrow(USER_NOT_FOUND_EXCEPTION);
+        given(userService.findById(any())).willThrow(new UserIdNotFoundException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/{id}", userId);
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason("사용자를 찾을 수 없습니다."));
+                .andExpect(content().json(createErrorResponseContent("User not found")));
     }
 
     @DisplayName("사용자가 자신의 개인 프로필을 조회할 경우 HTTP 상태코드 200과 UserResponse 를 반환한다.")
@@ -222,7 +228,7 @@ class UserControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(status().reason("중복된 이메일 입니다."));
+                .andExpect(content().json(createErrorResponseContent("User's some data is already existed")));
     }
 
     @DisplayName("이메일 토큰 전송에 성공한 경우 HTTP 상태코드 200을 반환한다.")
@@ -264,7 +270,7 @@ class UserControllerTest {
     @DisplayName("유효하지 않은 이메일 토큰일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void verifyInValidEmailToken() throws Exception {
-        given(emailTokenService.verify(any())).willThrow(INVALID_TOKEN_EXCEPTION);
+        given(emailTokenService.verify(any())).willThrow(new InvalidEmailTokenException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/verify-token/{token}", emailToken);
 
@@ -278,14 +284,14 @@ class UserControllerTest {
     @Test
     void verifyValidEmailTokenAndInvalidEmail() throws Exception {
         given(emailTokenService.verify(any())).willReturn(email);
-        given(userService.findByEmail(any())).willThrow(USER_NOT_FOUND_EXCEPTION);
+        given(userService.findByEmail(any())).willThrow(new UserIdNotFoundException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/verify-token/{token}", emailToken);
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason("사용자를 찾을 수 없습니다."));
+                .andExpect(content().json(createErrorResponseContent("User not found")));
     }
 
 }

@@ -10,17 +10,13 @@ import io.devlog.devlog.user.dto.UserUpdateRequest;
 import io.devlog.devlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_CREATED;
-import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_OK;
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
-import static io.devlog.devlog.user.exception.UserResponseStatusException.DUPLICATED_EMAIL_EXCEPTION;
 
 @RequiredArgsConstructor
 @RequestMapping(USER_API_URI)
@@ -33,61 +29,69 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> register(@Valid @RequestBody UserRegisterRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void register(@Valid @RequestBody UserRegisterRequest request) {
         if (userService.checkDuplicationEmail(request.getEmail()))
             throw new UserDataDuplicationException();
 
         userService.register(User.from(request, passwordEncoder));
         emailTokenService.sendEmailToken(request.getEmail());
-
-        return RESPONSE_CREATED;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> search(@PathVariable Long id) {
-        return ResponseEntity.ok(UserResponse.from(userService.findById(id)));
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse search(@PathVariable Long id) {
+        return UserResponse.from(userService.findById(id));
     }
 
     @GetMapping("/my-profile")
-    public ResponseEntity<UserResponse> getMyProfile(@AuthenticationPrincipal PrincipalDetails userDetails) {
-        return ResponseEntity.ok(UserResponse.from(userDetails.getUser()));
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse getMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
+        User principal = details.getUser();
+
+        return UserResponse.from(principal);
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> updateMyProfile(@Valid @RequestBody UserUpdateRequest request,
-                                                        @AuthenticationPrincipal PrincipalDetails userDetails) {
-        userService.updateProfile(userDetails.getUser(), request);
-        return ResponseEntity.ok(UserResponse.from(userDetails.getUser()));
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse updateMyProfile(@Valid @RequestBody UserUpdateRequest request,
+                                        @AuthenticationPrincipal PrincipalDetails details) {
+        User principal = details.getUser();
+
+        userService.updateProfile(principal, request);
+
+        return UserResponse.from(principal);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/duplicate/{email}")
+    public void checkDuplication(@PathVariable String email) {
+        if (userService.checkDuplicationEmail(email))
+            throw new UserDataDuplicationException();
     }
 
     @DeleteMapping
-    public ResponseEntity<HttpStatus> deleteMyProfile(@AuthenticationPrincipal PrincipalDetails userDetails) {
-        userService.deleteProfile(userDetails.getUser().getId());
-        return RESPONSE_OK;
-    }
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
+        User principal = details.getUser();
 
-    @GetMapping("/duplicate/{email}")
-    public ResponseEntity<HttpStatus> checkDuplication(@PathVariable String email) {
-        if (userService.checkDuplicationEmail(email))
-            throw new UserDataDuplicationException();
-
-        return RESPONSE_OK;
+        userService.deleteProfile(principal.getId());
     }
 
     @PostMapping("/email-verification")
-    public ResponseEntity<HttpStatus> sendEmailToken(@AuthenticationPrincipal PrincipalDetails userDetails) {
-        emailTokenService.sendEmailToken(userDetails.getUser().getEmail());
+    @ResponseStatus(HttpStatus.OK)
+    public void sendEmailToken(@AuthenticationPrincipal PrincipalDetails details) {
+        User principal = details.getUser();
 
-        return RESPONSE_OK;
+        emailTokenService.sendEmailToken(principal.getEmail());
     }
 
     @GetMapping("/verify-token/{token}")
-    public ResponseEntity<HttpStatus> verifyEmailToken(@PathVariable String token) {
+    @ResponseStatus(HttpStatus.OK)
+    public void verifyEmailToken(@PathVariable String token) {
         String email = emailTokenService.verify(token);
 
         userService.setEnabled(userService.findByEmail(email));
-
-        return RESPONSE_OK;
     }
 
 }
