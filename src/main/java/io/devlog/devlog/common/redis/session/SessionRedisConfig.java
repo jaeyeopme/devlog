@@ -15,14 +15,19 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @Configuration
 public class SessionRedisConfig {
 
-    @Value("${spring.redis.session.host}")
-    private String host;
+    private final String host;
 
-    @Value("${spring.redis.session.port}")
-    private int port;
+    private final int port;
 
-    @Value("${spring.redis.session.password}")
-    private String password;
+    private final String password;
+
+    public SessionRedisConfig(@Value("${spring.redis.session.host}") String host,
+                              @Value("${spring.redis.session.port}") int port,
+                              @Value("${spring.redis.session.password}") String password) {
+        this.host = host;
+        this.port = port;
+        this.password = password;
+    }
 
     @Primary
     @Bean(name = "sessionRedisFactory")

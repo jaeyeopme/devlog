@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_NOT_FOUND_EXCEPTION;
-import static io.devlog.devlog.common.redis.RedisConfigConstant.COMMENT;
+import static io.devlog.devlog.common.redis.cache.CacheRedisConfig.COMMENT;
 
 @RequiredArgsConstructor
 @Service

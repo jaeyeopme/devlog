@@ -18,23 +18,32 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.devlog.devlog.common.redis.RedisConfigConstant.*;
-
 @EnableCaching
 @Configuration
 public class CacheRedisConfig {
 
     public static final String CACHE_REDIS_TEMPLATE_NAME = "cacheRedisTemplate";
     public static final String CACHE_REDIS_FACTORY_NAME = "cacheRedisFactory";
-    @Value("${spring.redis.cache.host}")
-    private String host;
 
-    @Value("${spring.redis.cache.port}")
-    private int port;
+    public static final String POST = "POST";
+    public static final String COMMENT = "COMMENT";
 
-    @Value("${spring.redis.cache.password}")
-    private String password;
+    public static final long POST_CACHE_EXPIRATION_MINUTES = 5L;
+    public static final long COMMENT_CACHE_EXPIRATION_MINUTES = 10L;
 
+    private final String host;
+
+    private final int port;
+
+    private final String password;
+
+    public CacheRedisConfig(@Value("${spring.redis.cache.host}") String host,
+                            @Value("${spring.redis.cache.port}") int port,
+                            @Value("${spring.redis.cache.password}") String password) {
+        this.host = host;
+        this.port = port;
+        this.password = password;
+    }
 
     @Bean(CACHE_REDIS_FACTORY_NAME)
     public RedisConnectionFactory cacheRedisConnectionFactory() {
@@ -53,8 +62,8 @@ public class CacheRedisConfig {
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
         Map<String, RedisCacheConfiguration> configurations = new HashMap<>();
-        configurations.put(POST, redisCacheConfiguration.entryTtl(Duration.ofMinutes(POST_CACHE_EXPIRE_TIME)));
-        configurations.put(COMMENT, redisCacheConfiguration.entryTtl(Duration.ofMinutes(COMMENT_CACHE_EXPIRE_TIME)));
+        configurations.put(POST, redisCacheConfiguration.entryTtl(Duration.ofMinutes(POST_CACHE_EXPIRATION_MINUTES)));
+        configurations.put(COMMENT, redisCacheConfiguration.entryTtl(Duration.ofMinutes(COMMENT_CACHE_EXPIRATION_MINUTES)));
 
         return RedisCacheManager.builder(redisCacheFactory)
                 .withInitialCacheConfigurations(configurations)
