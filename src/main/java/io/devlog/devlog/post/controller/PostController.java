@@ -28,8 +28,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> write(@Valid @RequestBody PostRequest postRequest,
-                                            @AuthenticationPrincipal PrincipalDetails userDetails) {
-        postService.write(PostRequest.toEntity(postRequest, userDetails.getUser()));
+                                            @AuthenticationPrincipal PrincipalDetails details) {
+        postService.write(Post.from(postRequest, details.getUser()));
 
         return RESPONSE_CREATED;
     }

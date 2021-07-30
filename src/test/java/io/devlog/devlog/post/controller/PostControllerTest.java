@@ -93,7 +93,7 @@ class PostControllerTest {
     @DisplayName("사용자가 존재하는 게시글을 조회할 경우 HTTP 상태코드 200과 PostResponse 를 반환한다.")
     @Test
     void getExistPost() throws Exception {
-        Post post = PostRequest.toEntity(postRequest, user);
+        Post post = Post.from(postRequest, user);
 
         given(postService.findById(any())).willReturn(post);
 
@@ -122,7 +122,7 @@ class PostControllerTest {
     @DisplayName("사용자가 본인이 작성한 게시글를 수정할 경우 HTTP 상태코드 200과 PostResponse 를 반환한다.")
     @Test
     void modifyMyPost() throws Exception {
-        Post myPost = PostRequest.toEntity(postRequest, user);
+        Post myPost = Post.from(postRequest, user);
 
         given(postService.findById(any())).willReturn(myPost);
 
@@ -141,7 +141,7 @@ class PostControllerTest {
     @DisplayName("사용자가 본인이 작성하지 않은 포스트를 수정할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void modifyAnotherUserPost() throws Exception {
-        Post anotherUserPost = PostRequest.toEntity(postRequest, anotherUser);
+        Post anotherUserPost = Post.from(postRequest, anotherUser);
 
         given(postService.findById(any())).willReturn(anotherUserPost);
 
@@ -175,7 +175,7 @@ class PostControllerTest {
     @DisplayName("사용자가 본인이 작성한 게시글를 삭제할 경우 HTTP 상태코드 200을 반환한다.")
     @Test
     void deleteMyPost() throws Exception {
-        Post myPost = PostRequest.toEntity(postRequest, user);
+        Post myPost = Post.from(postRequest, user);
 
         given(postService.findById(any())).willReturn(myPost);
 
@@ -204,7 +204,7 @@ class PostControllerTest {
     @DisplayName("사용자가 본인이 작성하지 않은 포스트를 삭제할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void deleteAnotherUserPost() throws Exception {
-        Post anotherUserPost = PostRequest.toEntity(postRequest, anotherUser);
+        Post anotherUserPost = Post.from(postRequest, anotherUser);
 
         given(postService.findById(any())).willReturn(anotherUserPost);
 
