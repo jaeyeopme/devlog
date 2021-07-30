@@ -1,5 +1,6 @@
 package io.devlog.devlog.error;
 
+import io.devlog.devlog.error.user.InvalidEmailTokenException;
 import io.devlog.devlog.error.user.UserDataDuplicationException;
 import io.devlog.devlog.error.user.UserEmailNotFoundException;
 import io.devlog.devlog.error.user.UserIdNotFoundException;
@@ -21,6 +22,12 @@ public class ErrorControllerAdvice {
     @ExceptionHandler({UserEmailNotFoundException.class, UserIdNotFoundException.class})
     public ErrorResponse handleUserNotFound() {
         return new ErrorResponse("User not found");
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(InvalidEmailTokenException.class)
+    public ErrorResponse handleInvalidEmailToken() {
+        return new ErrorResponse("Invalid email token");
     }
 
 }
