@@ -17,8 +17,6 @@ import javax.validation.Valid;
 
 import static io.devlog.devlog.comment.controller.CommentController.COMMENT_API_URI;
 import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_UNAUTHORIZED_EXCEPTION;
-import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_CREATED;
-import static io.devlog.devlog.common.HttpStatusResponseEntity.RESPONSE_OK;
 
 @RequiredArgsConstructor
 @RequestMapping(COMMENT_API_URI)
@@ -29,24 +27,25 @@ public class CommentController {
     private final PostService postService;
     private final CommentService commentService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<HttpStatus> write(@Valid @RequestBody CommentRequest commentRequest,
-                                            @AuthenticationPrincipal PrincipalDetails userDetails) {
+    public void write(@Valid @RequestBody CommentRequest commentRequest,
+                      @AuthenticationPrincipal PrincipalDetails userDetails) {
         Post post = postService.findById(commentRequest.getPostId());
         commentService.write(Comment.from(commentRequest, post, userDetails.getUser()));
-
-        return RESPONSE_CREATED;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public ResponseEntity<CommentResponse> getComment(@PathVariable Long id) {
-        return ResponseEntity.ok(CommentResponse.of(commentService.findById(id)));
+    public CommentResponse getComment(@PathVariable Long id) {
+        return CommentResponse.of(commentService.findById(id));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public ResponseEntity<CommentResponse> modify(@PathVariable Long id,
-                                                  @Valid @RequestBody CommentRequest commentRequest,
-                                                  @AuthenticationPrincipal PrincipalDetails userDetails) {
+    public CommentResponse modify(@PathVariable Long id,
+                                  @Valid @RequestBody CommentRequest commentRequest,
+                                  @AuthenticationPrincipal PrincipalDetails userDetails) {
         Comment comment = commentService.findById(id);
 
         if (comment.isNotAuthor(userDetails.getUser()))
@@ -54,11 +53,12 @@ public class CommentController {
 
         commentService.modify(comment, commentRequest);
 
-        return ResponseEntity.ok(CommentResponse.of(comment));
+        return CommentResponse.of(comment);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable Long id,
+    public void delete(@PathVariable Long id,
                                              @AuthenticationPrincipal PrincipalDetails userDetails) {
         Comment comment = commentService.findById(id);
 
@@ -66,8 +66,6 @@ public class CommentController {
             throw COMMENT_UNAUTHORIZED_EXCEPTION;
 
         commentService.deleteById(id);
-
-        return RESPONSE_OK;
     }
 
 }
