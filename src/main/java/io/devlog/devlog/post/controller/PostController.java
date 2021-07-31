@@ -5,6 +5,7 @@ import io.devlog.devlog.post.dto.PostRequest;
 import io.devlog.devlog.post.dto.PostResponse;
 import io.devlog.devlog.post.service.PostService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
+import io.devlog.devlog.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,11 +24,12 @@ public class PostController {
     public static final String POST_API_URI = "/api/posts";
     private final PostService postService;
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void write(@Valid @RequestBody PostRequest postRequest,
                       @AuthenticationPrincipal PrincipalDetails details) {
-        postService.write(Post.from(postRequest, details.getUser()));
+        User user = details.getUser();
+        postService.write(Post.from(postRequest, user));
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -40,10 +42,11 @@ public class PostController {
     @PutMapping("/{id}")
     public PostResponse modify(@PathVariable Long id,
                                @Valid @RequestBody PostRequest postRequest,
-                               @AuthenticationPrincipal PrincipalDetails userDetails) {
+                               @AuthenticationPrincipal PrincipalDetails details) {
         Post post = postService.findById(id);
+        User principal = details.getUser();
 
-        if (post.isNotAuthor(userDetails.getUser()))
+        if (post.isNotAuthor(principal))
             throw POST_UNAUTHORIZED_EXCEPTION;
 
         postService.modify(post, postRequest);
