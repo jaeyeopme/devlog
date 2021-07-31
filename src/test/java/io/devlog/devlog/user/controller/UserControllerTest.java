@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
-import static io.devlog.devlog.user.exception.UserResponseStatusException.INVALID_TOKEN_EXCEPTION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,18 +38,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     private final Long userId = 1L;
+
     private final String email = "email@email.com";
+
     private final String emailToken = "emailToken";
+
     @MockBean
     UserService userService;
+
     @MockBean
     EmailTokenService emailTokenService;
+
     @MockBean
     PasswordEncoder passwordEncoder;
+
     @Autowired
     MockMvc mockMvc;
+
     @Autowired
     ObjectMapper objectMapper;
+
     private UserRegisterRequest userRegisterRequest;
     private UserUpdateRequest userUpdateRequest;
 
@@ -277,7 +284,7 @@ class UserControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
-                .andExpect(status().reason("인증토큰이 만료되었습니다."));
+                .andExpect(content().json(createErrorResponseContent("Invalid email token")));
     }
 
     @DisplayName("유효한 이메일 토큰이지만 유효하지 않은 이메일일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
