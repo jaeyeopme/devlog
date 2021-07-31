@@ -2,7 +2,7 @@ package io.devlog.devlog.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.devlog.devlog.common.email.EmailTokenService;
+import io.devlog.devlog.common.email.EmailService;
 import io.devlog.devlog.error.ErrorResponse;
 import io.devlog.devlog.error.user.InvalidEmailTokenException;
 import io.devlog.devlog.error.user.UserIdNotFoundException;
@@ -47,7 +47,7 @@ class UserControllerTest {
     UserService userService;
 
     @MockBean
-    EmailTokenService emailTokenService;
+    EmailService emailService;
 
     @MockBean
     PasswordEncoder passwordEncoder;
@@ -97,7 +97,7 @@ class UserControllerTest {
     @DisplayName("중복되지 않은 이메일로 회원가입한 경우 HTTP 상태코드 201을 반환한다.")
     @Test
     void registerNonDuplicatedEmail() throws Exception {
-        given(userService.checkDuplicationEmail(any())).willReturn(false);
+        given(userService.isDuplicated(any())).willReturn(false);
 
         MockHttpServletRequestBuilder requestBuilder = post(USER_API_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -111,7 +111,7 @@ class UserControllerTest {
     @DisplayName("중복된 이메일로 회원가입한 경우 HTTP 상태코드 409를 반환한다.")
     @Test
     void registerDuplicatedEmail() throws Exception {
-        given(userService.checkDuplicationEmail(any())).willReturn(true);
+        given(userService.isDuplicated(any())).willReturn(true);
 
         MockHttpServletRequestBuilder requestBuilder = post(USER_API_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -216,7 +216,7 @@ class UserControllerTest {
     @DisplayName("중복된 이메일이 없을 경우 HTTP 상태코드 200을 반환한다.")
     @Test
     void duplicateCheckWithNonDuplicatedEmail() throws Exception {
-        given(userService.checkDuplicationEmail(any())).willReturn(false);
+        given(userService.isDuplicated(any())).willReturn(false);
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/duplicate/{email}", email);
 
@@ -228,7 +228,7 @@ class UserControllerTest {
     @DisplayName("이메일이 중복되었을 경우 HTTP 상태코드 409와 메시지를 반환한다.")
     @Test
     void duplicateCheckWithDuplicatedEmail() throws Exception {
-        given(userService.checkDuplicationEmail(any())).willReturn(true);
+        given(userService.isDuplicated(any())).willReturn(true);
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/duplicate/{email}", email);
 
@@ -264,8 +264,8 @@ class UserControllerTest {
                 .nickname("nickname")
                 .build();
 
-        given(emailTokenService.verify(emailToken)).willReturn(email);
-        given(userService.findByEmail(any())).willReturn(existUser);
+        given(emailService.getEmail(emailToken)).willReturn(email);
+        given(userService.findBy(any())).willReturn(existUser);
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/verify-token/{token}", emailToken);
 
@@ -277,7 +277,7 @@ class UserControllerTest {
     @DisplayName("유효하지 않은 이메일 토큰일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void verifyInValidEmailToken() throws Exception {
-        given(emailTokenService.verify(any())).willThrow(new InvalidEmailTokenException(any()));
+        given(emailService.getEmail(any())).willThrow(new InvalidEmailTokenException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/verify-token/{token}", emailToken);
 
@@ -290,8 +290,8 @@ class UserControllerTest {
     @DisplayName("유효한 이메일 토큰이지만 유효하지 않은 이메일일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void verifyValidEmailTokenAndInvalidEmail() throws Exception {
-        given(emailTokenService.verify(any())).willReturn(email);
-        given(userService.findByEmail(any())).willThrow(new UserIdNotFoundException(any()));
+        given(emailService.getEmail(any())).willReturn(email);
+        given(userService.findBy(any())).willThrow(new UserIdNotFoundException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/verify-token/{token}", emailToken);
 

@@ -1,6 +1,7 @@
 package io.devlog.devlog.user.controller;
 
-import io.devlog.devlog.common.email.EmailTokenService;
+import io.devlog.devlog.common.email.EmailService;
+import io.devlog.devlog.error.user.InvalidEmailTokenException;
 import io.devlog.devlog.error.user.UserDataDuplicationException;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.domain.entity.User;
@@ -25,17 +26,19 @@ public class UserController {
 
     public static final String USER_API_URI = "/api/users";
     private final UserService userService;
-    private final EmailTokenService emailTokenService;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Valid @RequestBody UserRegisterRequest request) {
-        if (userService.checkDuplicationEmail(request.getEmail()))
+        String email = request.getEmail();
+
+        if (userService.isDuplicated(email))
             throw new UserDataDuplicationException();
 
         userService.register(User.from(request, passwordEncoder));
-        emailTokenService.sendEmailToken(request.getEmail());
+        emailService.sendToken(email);
     }
 
     @GetMapping("/{id}")
@@ -46,7 +49,7 @@ public class UserController {
 
     @GetMapping("/my-profile")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse getMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
+    public UserResponse findMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
         User principal = details.getUser();
 
         return UserResponse.from(principal);
@@ -66,7 +69,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/duplicate/{email}")
     public void checkDuplication(@PathVariable String email) {
-        if (userService.checkDuplicationEmail(email))
+        if (userService.isDuplicated(email))
             throw new UserDataDuplicationException();
     }
 
@@ -83,15 +86,18 @@ public class UserController {
     public void sendEmailToken(@AuthenticationPrincipal PrincipalDetails details) {
         User principal = details.getUser();
 
-        emailTokenService.sendEmailToken(principal.getEmail());
+        emailService.sendToken(principal.getEmail());
     }
 
     @GetMapping("/verify-token/{token}")
     @ResponseStatus(HttpStatus.OK)
     public void verifyEmailToken(@PathVariable String token) {
-        String email = emailTokenService.verify(token);
+        String email = emailService.getEmail(token);
 
-        userService.setEnabled(userService.findByEmail(email));
+        if (emailService.isInvalid(email))
+            throw new InvalidEmailTokenException(email);
+
+        userService.setEnabled(userService.findBy(email));
     }
 
 }

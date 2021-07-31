@@ -44,14 +44,14 @@ public class GeneralUserService implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public boolean checkDuplicationEmail(String email) {
+    public boolean isDuplicated(String email) {
         return userRepository.existsByEmail(email);
     }
 
 
     @Transactional(readOnly = true)
     @Override
-    public User findByEmail(String email) {
+    public User findBy(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserEmailNotFoundException(email));
     }

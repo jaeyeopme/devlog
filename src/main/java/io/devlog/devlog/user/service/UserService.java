@@ -9,13 +9,13 @@ public interface UserService {
 
     User findById(Long id);
 
-    User findByEmail(String email);
+    User findBy(String email);
 
     void updateProfile(User user, UserUpdateRequest request);
 
     void deleteProfile(Long id);
 
-    boolean checkDuplicationEmail(String email);
+    boolean isDuplicated(String email);
 
     void setEnabled(User user);
 

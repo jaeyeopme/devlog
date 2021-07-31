@@ -24,8 +24,10 @@ class GeneralUserServiceTest {
 
     @Mock
     UserRepository userRepository;
+
     @InjectMocks
     GeneralUserService userService;
+
     private UserUpdateRequest userUpdateRequest;
     private User user;
 
@@ -99,7 +101,7 @@ class GeneralUserServiceTest {
     void duplicateCheckWithDuplicatedEmail() {
         given(userRepository.existsByEmail(any())).willReturn(true);
 
-        boolean duplicated = userService.checkDuplicationEmail(any());
+        boolean duplicated = userService.isDuplicated(any());
 
         assertTrue(duplicated);
         then(userRepository).should(only()).existsByEmail(any());
@@ -110,7 +112,7 @@ class GeneralUserServiceTest {
     void duplicateCheckWithNonDuplicatedEmail() {
         given(userRepository.existsByEmail(any())).willReturn(false);
 
-        boolean duplicated = userService.checkDuplicationEmail(any());
+        boolean duplicated = userService.isDuplicated(any());
 
         assertFalse(duplicated);
         then(userRepository).should(only()).existsByEmail(any());
@@ -121,7 +123,7 @@ class GeneralUserServiceTest {
     void findUserWithExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
 
-        User findUser = userService.findByEmail(any());
+        User findUser = userService.findBy(any());
 
         assertThat(user).isEqualTo(findUser);
         then(userRepository).should(only()).findByEmail(any());
@@ -132,7 +134,7 @@ class GeneralUserServiceTest {
     void findUserByNonExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.empty());
 
-        assertThrows(UserEmailNotFoundException.class, () -> userService.findByEmail(any()));
+        assertThrows(UserEmailNotFoundException.class, () -> userService.findBy(any()));
 
         then(userRepository).should(only()).findByEmail(any());
     }

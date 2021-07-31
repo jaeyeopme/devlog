@@ -8,22 +8,23 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-
-import static io.devlog.devlog.common.email.EmailConstant.*;
-import static io.devlog.devlog.user.exception.UserResponseStatusException.INVALID_TOKEN_EXCEPTION;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class EmailTokenService {
+public class EmailService {
 
+    private static final String VERIFICATION_TITLE = "Devlog 인증번호 안내";
+    private static final String DOMAIN_NAME = "http://localhost:8080";
+    private static final String EMAIL_CONFIRM_URL = "/api/users/verify-token";
     private static final long EMAIL_TOKEN_EXPIRE_TIME = 180L;
 
-    private final TokenRedisService tokenRedisService;
+    private final RedisService redisService;
     private final JavaMailSender javaMailSender;
 
-    public void sendEmailToken(String email) {
-        String token = generateToken(email);
+    public void sendToken(String email) {
+        String token = generateEmailToken(email);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setText(buildContent(token));
@@ -38,26 +39,29 @@ public class EmailTokenService {
         }
     }
 
-    public String buildContent(String token) {
+    public String getEmail(String token) {
+        return redisService.get(token);
+    }
+
+    public boolean isInvalid(String email) {
+        return !email.isBlank();
+    }
+
+    private String buildContent(String token) {
         return DOMAIN_NAME +
                 EMAIL_CONFIRM_URL +
                 "/" + token;
     }
 
-    public String generateToken(String email) {
-        return tokenRedisService.generateToken(email, EMAIL_TOKEN_EXPIRE_TIME);
+    private String generateEmailToken(String email) {
+        String token = String.valueOf(UUID.randomUUID());
+        redisService.set(token, email, EMAIL_TOKEN_EXPIRE_TIME);
+
+        return token;
     }
 
-    public String verify(String token) {
-        String email = tokenRedisService.getEmail(token)
-                .orElseThrow(() -> INVALID_TOKEN_EXCEPTION);
-        deleteToken(token);
-
-        return email;
-    }
-
-    public void deleteToken(String token) {
-        tokenRedisService.deleteToken(token);
+    private void deleteToken(String token) {
+        redisService.deleteToken(token);
     }
 
 }
