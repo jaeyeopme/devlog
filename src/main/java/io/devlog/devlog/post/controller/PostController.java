@@ -1,5 +1,6 @@
 package io.devlog.devlog.post.controller;
 
+import io.devlog.devlog.error.post.PostAccessDeniedException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.dto.PostRequest;
 import io.devlog.devlog.post.dto.PostResponse;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
-import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_UNAUTHORIZED_EXCEPTION;
 
 @RequiredArgsConstructor
 @RequestMapping(POST_API_URI)
@@ -35,7 +35,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public PostResponse getPost(@PathVariable Long id) {
-        return PostResponse.of(postService.findById(id));
+        return PostResponse.from(postService.findById(id));
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -47,11 +47,11 @@ public class PostController {
         User principal = details.getUser();
 
         if (post.isNotAuthor(principal))
-            throw POST_UNAUTHORIZED_EXCEPTION;
+            throw new PostAccessDeniedException();
 
         postService.modify(post, postRequest);
 
-        return PostResponse.of(post);
+        return PostResponse.from(post);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -61,7 +61,7 @@ public class PostController {
         Post post = postService.findById(id);
 
         if (post.isNotAuthor(userDetails.getUser()))
-            throw POST_UNAUTHORIZED_EXCEPTION;
+            throw new PostAccessDeniedException();
 
         postService.deleteById(id);
     }

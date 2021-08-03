@@ -2,6 +2,7 @@ package io.devlog.devlog.post.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.devlog.devlog.error.ErrorResponse;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.dto.PostRequest;
 import io.devlog.devlog.post.dto.PostResponse;
@@ -43,6 +44,7 @@ class PostControllerTest {
     private PostRequest postRequest;
     private User user;
     private User anotherUser;
+
     RequestPostProcessor createPrincipal() {
         return SecurityMockMvcRequestPostProcessors.user(new PrincipalDetails(user));
     }
@@ -52,7 +54,11 @@ class PostControllerTest {
     }
 
     String createPostResponseContent(Post post) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(PostResponse.of(post));
+        return objectMapper.writeValueAsString(PostResponse.from(post));
+    }
+
+    String createPostErrorResponseContent(String message) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(new ErrorResponse(message));
     }
 
     @BeforeEach
@@ -138,7 +144,7 @@ class PostControllerTest {
                 .andExpect(content().json(createPostResponseContent(myPost)));
     }
 
-    @DisplayName("사용자가 본인이 작성하지 않은 포스트를 수정할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
+    @DisplayName("사용자가 본인이 작성하지 않은 포스트를 수정할 경우 HTTP 상태코드 403과 메시지를 반환한다.")
     @Test
     void modifyAnotherUserPost() throws Exception {
         Post anotherUserPost = Post.from(postRequest, anotherUser);
@@ -152,8 +158,8 @@ class PostControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(status().reason("접근 권한이 없습니다."));
+                .andExpect(status().isForbidden())
+                .andExpect(content().json(createPostErrorResponseContent("접근 권한이 없습니다.")));
     }
 
     @WithMockUser
@@ -201,7 +207,7 @@ class PostControllerTest {
                 .andExpect(status().reason("게시글을 찾을 수 없습니다."));
     }
 
-    @DisplayName("사용자가 본인이 작성하지 않은 포스트를 삭제할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
+    @DisplayName("사용자가 본인이 작성하지 않은 포스트를 삭제할 경우 HTTP 상태코드 403과 메시지를 반환한다.")
     @Test
     void deleteAnotherUserPost() throws Exception {
         Post anotherUserPost = Post.from(postRequest, anotherUser);
@@ -213,8 +219,8 @@ class PostControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(status().reason("접근 권한이 없습니다."));
+                .andExpect(status().isForbidden())
+                .andExpect(content().json(createPostErrorResponseContent("접근 권한이 없습니다.")));
     }
 
 }

@@ -13,7 +13,7 @@ public class PostResponse {
     private final String title;
     private final String content;
 
-    public static PostResponse of(Post post) {
+    public static PostResponse from(Post post) {
         return PostResponse.builder()
                 .title(post.getTitle())
                 .content(post.getContent())
