@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+    api:
+        build: .
+        env_file:
+            - .env
+        ports:
+            - "8080:8080"
+        depends_on:
+            - database
+            - session
+            - cache
+
+    database:
+        image: mariadb:10.6.3
+        container_name: database
+        env_file: .env
+        volumes: 
+            - mariadb:/var/lib/mysql
+        ports: 
+            - "3306:3306"
+        command:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+
+    cache:
+        image: redis:6.2.4-alpine
+        container_name: cache
+        env_file: .env
+        ports: 
+            - "6379:6379"
+        command: 
+            - --requirepass ${REDIS_CACHE_PASSWORD}
+
+    session:
+        image: redis:6.2.4-alpine
+        container_name: session
+        env_file: .env
+        ports: 
+            - "6380:6379"
+        command: 
+            - --requirepass ${REDIS_SESSION_PASSWORD}
+
+volumes:
+    mariadb:
