@@ -1,5 +1,6 @@
 package io.devlog.devlog.error;
 
+import io.devlog.devlog.error.common.CommentAccessDeniedException;
 import io.devlog.devlog.error.post.PostAccessDeniedException;
 import io.devlog.devlog.error.user.InvalidEmailTokenException;
 import io.devlog.devlog.error.user.UserDataDuplicationException;
@@ -32,7 +33,7 @@ public class ErrorControllerAdvice {
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(PostAccessDeniedException.class)
+    @ExceptionHandler({PostAccessDeniedException.class, CommentAccessDeniedException.class})
     public ErrorResponse handleAccessDenied() {
         return new ErrorResponse("접근 권한이 없습니다.");
     }

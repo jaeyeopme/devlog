@@ -6,6 +6,7 @@ import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.dto.CommentRequest;
 import io.devlog.devlog.comment.dto.CommentResponse;
 import io.devlog.devlog.comment.service.GeneralCommentService;
+import io.devlog.devlog.error.ErrorResponse;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.service.GeneralPostService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
@@ -66,7 +67,11 @@ class CommentControllerTest {
     }
 
     String createPostResponseContent(Comment comment) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(CommentResponse.of(comment));
+        return objectMapper.writeValueAsString(CommentResponse.from(comment));
+    }
+
+    String createErrorResponseContent(String message) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(new ErrorResponse(message));
     }
 
     @BeforeEach
@@ -173,7 +178,7 @@ class CommentControllerTest {
                 .andExpect(content().json(createPostResponseContent(myComment)));
     }
 
-    @DisplayName("사용자가 본인이 작성하지 않은 댓글을 수정할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
+    @DisplayName("사용자가 본인이 작성하지 않은 댓글을 수정할 경우 HTTP 상태코드 403과 메시지를 반환한다.")
     @Test
     void modifyAnotherUserComment() throws Exception {
         Comment anotherUserComment = Comment.from(commentRequest, post, anotherUser);
@@ -187,8 +192,8 @@ class CommentControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(status().reason("접근 권한이 없습니다."));
+                .andExpect(status().isForbidden())
+                .andExpect(content().json(createErrorResponseContent("접근 권한이 없습니다.")));
     }
 
     @DisplayName("사용자가 존재하지 않은 댓글을 수정할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
@@ -236,7 +241,7 @@ class CommentControllerTest {
                 .andExpect(status().reason("댓글을 찾을 수 없습니다."));
     }
 
-    @DisplayName("사용자가 본인이 작성하지 않은 댓글을 삭제할 경우 HTTP 상태코드 401과 메시지를 반환한다.")
+    @DisplayName("사용자가 본인이 작성하지 않은 댓글을 삭제할 경우 HTTP 상태코드 403과 메시지를 반환한다.")
     @Test
     void deleteAnotherUserComment() throws Exception {
         Comment anotherUserComment = Comment.from(commentRequest, post, anotherUser);
@@ -248,8 +253,8 @@ class CommentControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(status().reason("접근 권한이 없습니다."));
+                .andExpect(status().isForbidden())
+                .andExpect(content().json(createErrorResponseContent("접근 권한이 없습니다.")));
     }
 
 }

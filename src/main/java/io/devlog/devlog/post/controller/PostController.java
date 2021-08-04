@@ -29,6 +29,7 @@ public class PostController {
     public void write(@Valid @RequestBody PostRequest postRequest,
                       @AuthenticationPrincipal PrincipalDetails details) {
         User user = details.getUser();
+
         postService.write(Post.from(postRequest, user));
     }
 

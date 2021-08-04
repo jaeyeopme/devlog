@@ -120,7 +120,7 @@ class UserControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(content().json(createErrorResponseContent("User's some data is already existed")));
+                .andExpect(content().json(createErrorResponseContent("이미 존재하는 사용자입니다.")));
     }
 
     @WithMockUser
@@ -153,7 +153,7 @@ class UserControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().json(createErrorResponseContent("User not found")));
+                .andExpect(content().json(createErrorResponseContent("사용자를 찾을 수 없습니다.")));
     }
 
     @DisplayName("사용자가 자신의 개인 프로필을 조회할 경우 HTTP 상태코드 200과 UserResponse 를 반환한다.")
@@ -235,7 +235,7 @@ class UserControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andExpect(content().json(createErrorResponseContent("User's some data is already existed")));
+                .andExpect(content().json(createErrorResponseContent("이미 존재하는 사용자입니다.")));
     }
 
     @DisplayName("이메일 토큰 전송에 성공한 경우 HTTP 상태코드 200을 반환한다.")
@@ -284,7 +284,7 @@ class UserControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().json(createErrorResponseContent("Invalid email token")));
+                .andExpect(content().json(createErrorResponseContent("유효하지 않은 이메일 토큰입니다.")));
     }
 
     @DisplayName("유효한 이메일 토큰이지만 유효하지 않은 이메일일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
@@ -298,7 +298,7 @@ class UserControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(content().json(createErrorResponseContent("User not found")));
+                .andExpect(content().json(createErrorResponseContent("사용자를 찾을 수 없습니다.")));
     }
 
 }
