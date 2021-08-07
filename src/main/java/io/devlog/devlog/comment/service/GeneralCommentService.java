@@ -3,6 +3,7 @@ package io.devlog.devlog.comment.service;
 import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.domain.repository.CommentRepository;
 import io.devlog.devlog.comment.dto.CommentRequest;
+import io.devlog.devlog.error.comment.CommentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -10,7 +11,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_NOT_FOUND_EXCEPTION;
 import static io.devlog.devlog.common.redis.cache.CacheRedisConfig.COMMENT;
 
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class GeneralCommentService implements CommentService {
     @Override
     public Comment findById(Long id) {
         return commentRepository.findById(id)
-                .orElseThrow(() -> COMMENT_NOT_FOUND_EXCEPTION);
+                .orElseThrow(() -> new CommentNotFoundException(id));
     }
 
     @CachePut(cacheNames = COMMENT, key = "#comment.id")

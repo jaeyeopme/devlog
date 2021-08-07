@@ -3,6 +3,7 @@ package io.devlog.devlog.comment.service;
 import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.domain.repository.CommentRepository;
 import io.devlog.devlog.comment.dto.CommentRequest;
+import io.devlog.devlog.error.comment.CommentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,12 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_NOT_FOUND_EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.only;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,9 +64,9 @@ public class GeneralCommentServiceTest {
     @DisplayName("존재하지 않은 댓글 ID로 댓글을 조회하는 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void findCommentByNonExistCommentId() {
-        given(commentRepository.findById(any())).willThrow(COMMENT_NOT_FOUND_EXCEPTION);
+        given(commentRepository.findById(any())).willReturn(Optional.empty());
 
-        assertThrows(COMMENT_NOT_FOUND_EXCEPTION.getClass(), () -> commentService.findById(any()));
+        assertThrows(CommentNotFoundException.class, () -> commentService.findById(any()));
 
         then(commentRepository).should(only()).findById(any());
     }

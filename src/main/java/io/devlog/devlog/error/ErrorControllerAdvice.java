@@ -1,6 +1,7 @@
 package io.devlog.devlog.error;
 
-import io.devlog.devlog.error.common.CommentAccessDeniedException;
+import io.devlog.devlog.error.comment.CommentAccessDeniedException;
+import io.devlog.devlog.error.comment.CommentNotFoundException;
 import io.devlog.devlog.error.post.PostAccessDeniedException;
 import io.devlog.devlog.error.post.PostNotFoundException;
 import io.devlog.devlog.error.user.InvalidEmailTokenException;
@@ -31,6 +32,12 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(PostNotFoundException.class)
     public ErrorResponse handlePostNotFound() {
         return new ErrorResponse("게시글을 찾을 수 없습니다.");
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ErrorResponse handleCommentNotFound() {
+        return new ErrorResponse("댓글을 찾을 수 없습니다.");
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
