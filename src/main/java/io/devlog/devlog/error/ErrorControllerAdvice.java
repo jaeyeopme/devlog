@@ -2,6 +2,7 @@ package io.devlog.devlog.error;
 
 import io.devlog.devlog.error.common.CommentAccessDeniedException;
 import io.devlog.devlog.error.post.PostAccessDeniedException;
+import io.devlog.devlog.error.post.PostNotFoundException;
 import io.devlog.devlog.error.user.InvalidEmailTokenException;
 import io.devlog.devlog.error.user.UserDataDuplicationException;
 import io.devlog.devlog.error.user.UserEmailNotFoundException;
@@ -24,6 +25,12 @@ public class ErrorControllerAdvice {
     @ExceptionHandler({UserEmailNotFoundException.class, UserIdNotFoundException.class})
     public ErrorResponse handleUserNotFound() {
         return new ErrorResponse("사용자를 찾을 수 없습니다.");
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(PostNotFoundException.class)
+    public ErrorResponse handlePostNotFound() {
+        return new ErrorResponse("게시글을 찾을 수 없습니다.");
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

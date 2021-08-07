@@ -1,5 +1,6 @@
 package io.devlog.devlog.post.service;
 
+import io.devlog.devlog.error.post.PostNotFoundException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.domain.repository.PostRepository;
 import io.devlog.devlog.post.dto.PostRequest;
@@ -13,11 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_NOT_FOUND_EXCEPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.only;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,7 +68,7 @@ class GeneralPostServiceTest {
     void findPostByNonExistPostId() {
         given(postRepository.findById(any())).willReturn(Optional.empty());
 
-        assertThrows(POST_NOT_FOUND_EXCEPTION.getClass(), () -> postService.findById(any()));
+        assertThrows(PostNotFoundException.class, () -> postService.findById(any()));
 
         then(postRepository).should(only()).findById(any());
     }

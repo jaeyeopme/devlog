@@ -7,6 +7,7 @@ import io.devlog.devlog.comment.dto.CommentRequest;
 import io.devlog.devlog.comment.dto.CommentResponse;
 import io.devlog.devlog.comment.service.GeneralCommentService;
 import io.devlog.devlog.error.ErrorResponse;
+import io.devlog.devlog.error.post.PostNotFoundException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.service.GeneralPostService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
@@ -25,7 +26,6 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import static io.devlog.devlog.comment.controller.CommentController.COMMENT_API_URI;
 import static io.devlog.devlog.comment.exception.CommentResponseException.COMMENT_NOT_FOUND_EXCEPTION;
-import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_NOT_FOUND_EXCEPTION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -117,7 +117,7 @@ class CommentControllerTest {
     @DisplayName("사용자가 존재하지 않은 게시글에 댓글을 작성할 경우 HTTP 상태코드 404과 메시지를 반환한다.")
     @Test
     void writeNewCommentWithNonExistPost() throws Exception {
-        given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
+        given(postService.findById(any())).willThrow(new PostNotFoundException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = post(COMMENT_API_URI)
                 .with(createPrincipal())
@@ -127,7 +127,7 @@ class CommentControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason("게시글을 찾을 수 없습니다."));
+                .andExpect(content().json(createErrorResponseContent("게시글을 찾을 수 없습니다.")));
     }
 
     @DisplayName("사용자가 존재하는 댓글을 조회할 경우 HTTP 상태코드 200과 CommentResponse 를 반환한다.")

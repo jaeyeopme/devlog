@@ -1,5 +1,6 @@
 package io.devlog.devlog.post.service;
 
+import io.devlog.devlog.error.post.PostNotFoundException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.domain.repository.PostRepository;
 import io.devlog.devlog.post.dto.PostRequest;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static io.devlog.devlog.common.redis.cache.CacheRedisConfig.POST;
-import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_NOT_FOUND_EXCEPTION;
 
 @RequiredArgsConstructor
 @Service
@@ -31,7 +31,7 @@ public class GeneralPostService implements PostService {
     @Override
     public Post findById(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> POST_NOT_FOUND_EXCEPTION);
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @CachePut(cacheNames = POST, key = "#post.id")

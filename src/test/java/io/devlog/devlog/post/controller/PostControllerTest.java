@@ -3,6 +3,7 @@ package io.devlog.devlog.post.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.devlog.devlog.error.ErrorResponse;
+import io.devlog.devlog.error.post.PostNotFoundException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.dto.PostRequest;
 import io.devlog.devlog.post.dto.PostResponse;
@@ -23,7 +24,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
-import static io.devlog.devlog.post.exception.PostResponseStatusException.POST_NOT_FOUND_EXCEPTION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -115,14 +115,14 @@ class PostControllerTest {
     @DisplayName("사용자가 존재하지 않은 게시글을 조회할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void getNonExistPost() throws Exception {
-        given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
+        given(postService.findById(any())).willThrow(new PostNotFoundException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = get(POST_API_URI + "/{id}", postId);
 
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason("게시글을 찾을 수 없습니다."));
+                .andExpect(content().json(createPostErrorResponseContent("게시글을 찾을 수 없습니다.")));
     }
 
     @DisplayName("사용자가 본인이 작성한 게시글를 수정할 경우 HTTP 상태코드 200과 PostResponse 를 반환한다.")
@@ -166,7 +166,7 @@ class PostControllerTest {
     @DisplayName("사용자가 존재하지 않은 게시글을 수정할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void modifyNonExistPost() throws Exception {
-        given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
+        given(postService.findById(any())).willThrow(new PostNotFoundException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = put(POST_API_URI + "/{id}", postId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -175,7 +175,7 @@ class PostControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason("게시글을 찾을 수 없습니다."));
+                .andExpect(content().json(createPostErrorResponseContent("게시글을 찾을 수 없습니다.")));
     }
 
     @DisplayName("사용자가 본인이 작성한 게시글를 삭제할 경우 HTTP 상태코드 200을 반환한다.")
@@ -196,7 +196,7 @@ class PostControllerTest {
     @DisplayName("사용자가 존재하지 않은 게시글을 삭제할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void deleteNonExistPost() throws Exception {
-        given(postService.findById(any())).willThrow(POST_NOT_FOUND_EXCEPTION);
+        given(postService.findById(any())).willThrow(new PostNotFoundException(any()));
 
         MockHttpServletRequestBuilder requestBuilder = delete(POST_API_URI + "/{id}", postId)
                 .with(createPrincipal());
@@ -204,7 +204,7 @@ class PostControllerTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason("게시글을 찾을 수 없습니다."));
+                .andExpect(content().json(createPostErrorResponseContent("게시글을 찾을 수 없습니다.")));
     }
 
     @DisplayName("사용자가 본인이 작성하지 않은 포스트를 삭제할 경우 HTTP 상태코드 403과 메시지를 반환한다.")
