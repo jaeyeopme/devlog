@@ -32,14 +32,19 @@ public class GeneralUserService implements UserService {
 
     @Transactional
     @Override
-    public void updateProfile(User user, UserUpdateRequest request) {
+    public User updateProfile(String email, UserUpdateRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserEmailNotFoundException(email));
+
         user.updateProfile(request);
+
+        return user;
     }
 
     @Transactional
     @Override
-    public void deleteProfile(Long id) {
-        userRepository.deleteById(id);
+    public void deleteProfileByEmail(String email) {
+        userRepository.deleteByEmail(email);
     }
 
     @Transactional(readOnly = true)
@@ -51,15 +56,18 @@ public class GeneralUserService implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public User findBy(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserEmailNotFoundException(email));
     }
 
     @Transactional
     @Override
-    public void setEnabled(User user) {
-        user.setEnabled();
+    public void setEnable(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserEmailNotFoundException(email));
+
+        user.setEnable();
     }
 
 }

@@ -50,20 +50,20 @@ public class UserController {
     @GetMapping("/my-profile")
     @ResponseStatus(HttpStatus.OK)
     public UserResponse findMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
-        User principal = details.getUser();
+        String email = details.getEmail();
 
-        return UserResponse.from(principal);
+        return UserResponse.from(userService.findByEmail(email));
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public UserResponse updateMyProfile(@Valid @RequestBody UserUpdateRequest request,
                                         @AuthenticationPrincipal PrincipalDetails details) {
-        User principal = details.getUser();
+        String email = details.getEmail();
 
-        userService.updateProfile(principal, request);
+        User user = userService.updateProfile(email, request);
 
-        return UserResponse.from(principal);
+        return UserResponse.from(user);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -76,17 +76,13 @@ public class UserController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deleteMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
-        User principal = details.getUser();
-
-        userService.deleteProfile(principal.getId());
+        userService.deleteProfileByEmail(details.getEmail());
     }
 
     @PostMapping("/email-verification")
     @ResponseStatus(HttpStatus.OK)
     public void sendEmailToken(@AuthenticationPrincipal PrincipalDetails details) {
-        User principal = details.getUser();
-
-        emailService.sendToken(principal.getEmail());
+        emailService.sendToken(details.getEmail());
     }
 
     @GetMapping("/verify-token/{token}")
@@ -97,7 +93,7 @@ public class UserController {
         if (emailService.isInvalid(email))
             throw new InvalidEmailTokenException(email);
 
-        userService.setEnabled(userService.findBy(email));
+        userService.setEnable(email);
     }
 
 }

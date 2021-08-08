@@ -8,6 +8,8 @@ import io.devlog.devlog.error.comment.CommentAccessDeniedException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.service.PostService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
+import io.devlog.devlog.user.domain.entity.User;
+import io.devlog.devlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,16 +25,18 @@ import static io.devlog.devlog.comment.controller.CommentController.COMMENT_API_
 public class CommentController {
 
     public static final String COMMENT_API_URI = "/api/comments";
+    private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void write(@Valid @RequestBody CommentRequest commentRequest,
-                      @AuthenticationPrincipal PrincipalDetails userDetails) {
+                      @AuthenticationPrincipal PrincipalDetails details) {
+        User author = userService.findByEmail(details.getEmail());
         Post post = postService.findById(commentRequest.getPostId());
 
-        commentService.write(Comment.from(commentRequest, post, userDetails.getUser()));
+        commentService.write(Comment.from(commentRequest, post, author));
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -45,10 +49,11 @@ public class CommentController {
     @PutMapping("/{id}")
     public CommentResponse modify(@PathVariable Long id,
                                   @Valid @RequestBody CommentRequest commentRequest,
-                                  @AuthenticationPrincipal PrincipalDetails userDetails) {
+                                  @AuthenticationPrincipal PrincipalDetails details) {
+        User author = userService.findByEmail(details.getEmail());
         Comment comment = commentService.findById(id);
 
-        if (comment.isNotAuthor(userDetails.getUser()))
+        if (comment.isNotAuthor(author))
             throw new CommentAccessDeniedException();
 
         commentService.modify(comment, commentRequest);
@@ -59,10 +64,11 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id,
-                                             @AuthenticationPrincipal PrincipalDetails userDetails) {
+                       @AuthenticationPrincipal PrincipalDetails details) {
+        User author = userService.findByEmail(details.getEmail());
         Comment comment = commentService.findById(id);
 
-        if (comment.isNotAuthor(userDetails.getUser()))
+        if (comment.isNotAuthor(author))
             throw new CommentAccessDeniedException();
 
         commentService.deleteById(id);

@@ -50,7 +50,8 @@ public class EmailService {
     private String buildContent(String token) {
         return DOMAIN_NAME +
                 EMAIL_CONFIRM_URL +
-                "/" + token;
+                "/" +
+                token;
     }
 
     private String generateEmailToken(String email) {

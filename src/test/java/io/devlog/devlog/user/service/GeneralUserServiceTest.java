@@ -79,21 +79,23 @@ class GeneralUserServiceTest {
     @DisplayName("사용자의 프로필을 수정한다.")
     @Test
     void updateProfile() {
+        given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
         assertThat(user.getNickname()).isNotEqualTo(userUpdateRequest.getNickname());
 
-        userService.updateProfile(user, userUpdateRequest);
+        User updatedProfile = userService.updateProfile(this.user.getEmail(), userUpdateRequest);
 
-        assertThat(user.getNickname()).isEqualTo(userUpdateRequest.getNickname());
+        assertThat(updatedProfile.getNickname()).isEqualTo(userUpdateRequest.getNickname());
+        assertThat(this.user.getNickname()).isEqualTo(userUpdateRequest.getNickname());
     }
 
     @DisplayName("사용자의 프로필을 삭제한다.")
     @Test
     void deleteProfile() {
-        willDoNothing().given(userRepository).deleteById(any());
+        willDoNothing().given(userRepository).deleteByEmail(any());
 
-        userService.deleteProfile(any());
+        userService.deleteProfileByEmail(any());
 
-        then(userRepository).should(only()).deleteById(any());
+        then(userRepository).should(only()).deleteByEmail(any());
     }
 
     @DisplayName("존재하는 이메일로 중복검사를 하는 경우 실패한다.")
@@ -123,7 +125,7 @@ class GeneralUserServiceTest {
     void findUserWithExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
 
-        User findUser = userService.findBy(any());
+        User findUser = userService.findByEmail(any());
 
         assertThat(user).isEqualTo(findUser);
         then(userRepository).should(only()).findByEmail(any());
@@ -134,7 +136,7 @@ class GeneralUserServiceTest {
     void findUserByNonExistEmail() {
         given(userRepository.findByEmail(any())).willReturn(Optional.empty());
 
-        assertThrows(UserEmailNotFoundException.class, () -> userService.findBy(any()));
+        assertThrows(UserEmailNotFoundException.class, () -> userService.findByEmail(any()));
 
         then(userRepository).should(only()).findByEmail(any());
     }
@@ -142,10 +144,12 @@ class GeneralUserServiceTest {
     @DisplayName("사용자가 활성화된다.")
     @Test
     void setEnabled() {
+        given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
         assertFalse(user.isEnabled());
 
-        userService.setEnabled(user);
+        userService.setEnable(user.getEmail());
 
+        then(userRepository).should(only()).findByEmail(any());
         assertTrue(user.isEnabled());
     }
 

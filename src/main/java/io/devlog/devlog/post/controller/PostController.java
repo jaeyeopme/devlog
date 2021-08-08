@@ -7,6 +7,7 @@ import io.devlog.devlog.post.dto.PostResponse;
 import io.devlog.devlog.post.service.PostService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.domain.entity.User;
+import io.devlog.devlog.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,13 +23,14 @@ import static io.devlog.devlog.post.controller.PostController.POST_API_URI;
 public class PostController {
 
     public static final String POST_API_URI = "/api/posts";
+    private final UserService userService;
     private final PostService postService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void write(@Valid @RequestBody PostRequest postRequest,
                       @AuthenticationPrincipal PrincipalDetails details) {
-        User user = details.getUser();
+        User user = userService.findByEmail(details.getUsername());
 
         postService.write(Post.from(postRequest, user));
     }
@@ -45,9 +47,9 @@ public class PostController {
                                @Valid @RequestBody PostRequest postRequest,
                                @AuthenticationPrincipal PrincipalDetails details) {
         Post post = postService.findById(id);
-        User principal = details.getUser();
+        User author = userService.findByEmail(details.getEmail());
 
-        if (post.isNotAuthor(principal))
+        if (post.isNotAuthor(author))
             throw new PostAccessDeniedException();
 
         postService.modify(post, postRequest);
@@ -58,10 +60,11 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id,
-                       @AuthenticationPrincipal PrincipalDetails userDetails) {
+                       @AuthenticationPrincipal PrincipalDetails details) {
+        User author = userService.findByEmail(details.getEmail());
         Post post = postService.findById(id);
 
-        if (post.isNotAuthor(userDetails.getUser()))
+        if (post.isNotAuthor(author))
             throw new PostAccessDeniedException();
 
         postService.deleteById(id);

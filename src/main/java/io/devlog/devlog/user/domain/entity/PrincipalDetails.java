@@ -1,51 +1,43 @@
 package io.devlog.devlog.user.domain.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
+import java.util.Set;
 
 @Getter
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-    private final User user;
+    private String email;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getAuthorities();
-    }
+    private String password;
 
-    @Override
-    public String getPassword() {
-        return user.getPassword();
-    }
+    private Set<Authority> authorities;
+
+    private boolean enabled;
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return user.isEnabled();
+        return enabled;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.isEnabled();
+        return enabled;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return user.isEnabled();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return user.isEnabled();
+        return enabled;
     }
 
 }

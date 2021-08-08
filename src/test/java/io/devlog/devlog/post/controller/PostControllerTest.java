@@ -46,7 +46,11 @@ class PostControllerTest {
     private User anotherUser;
 
     RequestPostProcessor createPrincipal() {
-        return SecurityMockMvcRequestPostProcessors.user(new PrincipalDetails(user));
+        return SecurityMockMvcRequestPostProcessors.user(PrincipalDetails.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .authorities(user.getAuthorities())
+                .build());
     }
 
     String createPostRequestContent() throws JsonProcessingException {

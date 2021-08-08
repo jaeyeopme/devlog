@@ -67,12 +67,16 @@ public class User extends BaseTimeEntity {
                 .build();
     }
 
-    public void setEnabled() {
-        this.enabled = true;
+    public void addAuthority(Authority authority) {
+        this.authorities.add(authority);
     }
 
-    public void updateProfile(UserUpdateRequest userUpdateRequest) {
-        this.nickname = userUpdateRequest.getNickname();
+    public void updateProfile(UserUpdateRequest request) {
+        this.nickname = request.getNickname();
+    }
+
+    public void setEnable() {
+        this.enabled = true;
     }
 
 }
