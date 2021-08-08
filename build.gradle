@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.0'
+    id 'org.springframework.boot' version '2.5.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
@@ -8,12 +8,14 @@ group = 'io.devlog'
 version = 'v1'
 sourceCompatibility = '11'
 
-repositories {
-    mavenCentral()
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
-configurations.all {
-    exclude module: 'slf4j-simple'
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -29,9 +31,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-    runtimeOnly 'com.h2database:h2'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -43,8 +43,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-jar {
-    enabled = false
 }
