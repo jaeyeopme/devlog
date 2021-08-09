@@ -11,35 +11,13 @@ spring:
   devtools:
     add-properties: false
 
-  cache:
-    type: redis
-
-  redis:
-    session:
-      host: ${REDIS_SESSION_HOST}
-      port: ${REDIS_SESSION_PORT}
-      password: ${REDIS_SESSION_PASSWORD}
-
-    cache:
-      host: ${REDIS_CACHE_HOST}
-      port: ${REDIS_CACHE_PORT}
-      password: ${REDIS_CACHE_PASSWORD}
-
   jpa:
-    # OSIV - Open Session In View
-    # Session 은 Hibernate 의 Session 객체이며, Session 객체는 영속성 컨텍스트를 포함합니다.
-    #
-    # OSIV 를 사용하지 않을 경우 (Service -> Repository)
-    # Session 과 DB Connection 의 지속 기간은 Transaction 과 동일합니다.
-    #
-    # OSIV 를 사용할 경우 (Filter Interceptor -> Controller -> Service -> Repository)
-    # Session 과 DB Connection 은 View 렌더링이 끝나는 시점까지 지속됩니다.
     open-in-view: false
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
+    username: ${MAIL_USER}
     password: ${MAIL_PASSWORD}
     protocol: smtp
     properties.mail.smtp:

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  database:
+    image: mariadb:10.5.3
+    container_name: mariadb-container
+    environment:
+      MYSQL_HOST: localhost
+      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: devlog
+      MYSQL_USER: test
+      MYSQL_PASSWORD: password
+      TZ: Asia/Seoul
+    volumes:
+      - mariadb:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+  session:
+    image: redis:6.2.4-alpine
+    container_name: session-container
+    ports:
+      - "6379:6379"
+    command:
+      - --requirepass session-password
+
+  cache:
+    image: redis:6.2.4-alpine
+    container_name: cache-container
+    ports:
+      - "6380:6379"
+    command:
+      - --requirepass cache-password
+
+volumes:
+  mariadb:

@@ -7,15 +7,23 @@ logging:
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ${MARIADB_URL}
-    username: ${MARIADB_USERNAME}
-    password: ${MARIADB_PASSWORD}
+    url: jdbc:mariadb://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
 
   jpa:
     database: mysql
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-         format_sql: true
+
+  cache:
+    type: redis
+
+  redis:
+    session:
+      host: session-container
+      port: ${REDIS_SESSION_PORT}
+      password: ${REDIS_SESSION_PASSWORD}
+
+    cache:
+      host: cache-container
+      port: ${REDIS_CACHE_PORT}
+      password: ${REDIS_CACHE_PASSWORD}
