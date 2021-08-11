@@ -16,16 +16,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorControllerAdvice {
 
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "이미 존재하는 사용자입니다.")
     @ExceptionHandler(UserDataDuplicationException.class)
-    public ErrorResponse handleUserDataDuplication() {
-        return new ErrorResponse("이미 존재하는 사용자입니다.");
+    public void handleUserDataDuplication() {
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "사용자를 찾을 수 없습니다.")
     @ExceptionHandler({UserEmailNotFoundException.class, UserIdNotFoundException.class})
-    public ErrorResponse handleUserNotFound() {
-        return new ErrorResponse("사용자를 찾을 수 없습니다.");
+    public void handleUserNotFound() {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
