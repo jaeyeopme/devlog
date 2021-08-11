@@ -1,5 +1,9 @@
 # 공통
 
+server:
+  error:
+    include-message: always
+
 spring:
   profiles:
     active: dev

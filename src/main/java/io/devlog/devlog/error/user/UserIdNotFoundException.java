@@ -1,9 +1,12 @@
 package io.devlog.devlog.error.user;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class UserIdNotFoundException extends RuntimeException {
 
     public UserIdNotFoundException(Long id) {
-        super(String.format("User id not found: [%d]", id));
+        log.error("User id not found: [{}]", id);
     }
 
 }
