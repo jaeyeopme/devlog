@@ -1,9 +1,12 @@
 package io.devlog.devlog.error.post;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PostNotFoundException extends RuntimeException {
 
     public PostNotFoundException(Long id) {
-        super(String.format("Post id not found: [%d]", id));
+        log.error("Post id not found: [{}]", id);
     }
 
 }

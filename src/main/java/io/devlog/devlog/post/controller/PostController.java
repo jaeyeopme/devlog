@@ -46,11 +46,11 @@ public class PostController {
     public PostResponse modify(@PathVariable Long id,
                                @Valid @RequestBody PostRequest postRequest,
                                @AuthenticationPrincipal PrincipalDetails details) {
-        Post post = postService.findById(id);
         User author = userService.findByEmail(details.getEmail());
+        Post post = postService.findById(id);
 
         if (post.isNotAuthor(author))
-            throw new PostAccessDeniedException();
+            throw new PostAccessDeniedException(author.getId());
 
         postService.modify(post, postRequest);
 
@@ -65,7 +65,7 @@ public class PostController {
         Post post = postService.findById(id);
 
         if (post.isNotAuthor(author))
-            throw new PostAccessDeniedException();
+            throw new PostAccessDeniedException(author.getId());
 
         postService.deleteById(id);
     }

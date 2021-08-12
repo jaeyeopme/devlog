@@ -26,28 +26,24 @@ public class ErrorControllerAdvice {
     public void handleUserNotFound() {
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "게시글을 찾을 수 없습니다.")
     @ExceptionHandler(PostNotFoundException.class)
-    public ErrorResponse handlePostNotFound() {
-        return new ErrorResponse("게시글을 찾을 수 없습니다.");
+    public void handlePostNotFound() {
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "댓글을 찾을 수 없습니다.")
     @ExceptionHandler(CommentNotFoundException.class)
-    public ErrorResponse handleCommentNotFound() {
-        return new ErrorResponse("댓글을 찾을 수 없습니다.");
+    public void handleCommentNotFound() {
     }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED, reason = "유효하지 않은 이메일 토큰입니다.")
     @ExceptionHandler(InvalidEmailTokenException.class)
-    public ErrorResponse handleInvalidEmailToken() {
-        return new ErrorResponse("유효하지 않은 이메일 토큰입니다.");
+    public void handleInvalidEmailToken() {
     }
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "접근 권한이 없습니다.")
     @ExceptionHandler({PostAccessDeniedException.class, CommentAccessDeniedException.class})
-    public ErrorResponse handleAccessDenied() {
-        return new ErrorResponse("접근 권한이 없습니다.");
+    public void handleAccessDenied() {
     }
 
 }

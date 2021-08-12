@@ -54,7 +54,7 @@ public class CommentController {
         Comment comment = commentService.findById(id);
 
         if (comment.isNotAuthor(author))
-            throw new CommentAccessDeniedException();
+            throw new CommentAccessDeniedException(author.getId());
 
         commentService.modify(comment, commentRequest);
 
@@ -69,7 +69,7 @@ public class CommentController {
         Comment comment = commentService.findById(id);
 
         if (comment.isNotAuthor(author))
-            throw new CommentAccessDeniedException();
+            throw new CommentAccessDeniedException(author.getId());
 
         commentService.deleteById(id);
     }
