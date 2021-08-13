@@ -3,6 +3,7 @@ package io.devlog.devlog.user.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.devlog.devlog.common.email.EmailService;
+import io.devlog.devlog.common.security.WithMockPrincipal;
 import io.devlog.devlog.error.user.UserIdNotFoundException;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRegisterRequest;
@@ -14,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.devlog.devlog.user.controller.UserController.USER_API_URI;
@@ -35,7 +35,7 @@ class UserControllerTest {
     @MockBean
     EmailService emailService;
     @MockBean
-    PasswordEncoder passwordEncoder;
+    SecurityContextHolder securityContextHolder;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -51,7 +51,7 @@ class UserControllerTest {
         UserRegisterRequest request = UserRegisterRequest.builder()
                 .email("email@email.com")
                 .nickname("nickname")
-                .password("Password1234!@")
+                .password("Password1234!")
                 .build();
 
         given(userService.isDuplicated(any())).willReturn(false);
@@ -63,29 +63,30 @@ class UserControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    @DisplayName("중복된 이메일로 회원가입한 경우 HTTP 상태코드 409를 반환한다.")
+    @DisplayName("중복된 이메일로 회원가입한 경우 HTTP 상태코드 409와 메시지를 반환한다.")
     @Test
     void registerDuplicatedEmail() throws Exception {
-        UserRegisterRequest registerRequest = UserRegisterRequest.builder()
-                .email("duplicateEmail@email.com")
+        UserRegisterRequest request = UserRegisterRequest.builder()
+                .email("email@email.com")
                 .nickname("nickname")
-                .password("Password1234!@")
+                .password("Password1234!")
                 .build();
 
         given(userService.isDuplicated(any())).willReturn(true);
 
         mockMvc.perform(post(USER_API_URI)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJSON(registerRequest)))
+                        .content(toJSON(request)))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(status().reason("이미 존재하는 사용자입니다."));
     }
 
-    @WithMockUser
+    @WithMockPrincipal
     @DisplayName("회원가입 되어있는 사용자를 조회할 경우 HTTP 상태코드 200을 반환한다.")
     @Test
     void searchExistUser() throws Exception {
+
         User user = User.builder()
                 .email("email@email.com")
                 .password("Password1234!")
@@ -102,7 +103,7 @@ class UserControllerTest {
                 .andExpect(content().json(toJSON(response)));
     }
 
-    @WithMockUser
+    @WithMockPrincipal
     @DisplayName("회원가입 되어있지 않은 사용자를 조회할 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void searchWithNotExistUser() throws Exception {
@@ -113,45 +114,52 @@ class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(status().reason("사용자를 찾을 수 없습니다."));
     }
-//
-//    @DisplayName("사용자가 자신의 개인 프로필을 조회할 경우 HTTP 상태코드 200과 UserResponse 를 반환한다.")
-//    @Test
-//    void getProfile() throws Exception {
-//        User loginUser = User.builder()
-//                .email("email@email.com")
-//                .password("Password1234!")
-//                .nickname("nickname")
-//                .build();
-//
-//        MockHttpServletRequestBuilder requestBuilder = get(USER_API_URI + "/my-profile")
-//                .with(principal(loginUser));
-//
-//        mockMvc.perform(requestBuilder)
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(content().json(createUserResponseContent(loginUser)));
-//    }
-//
+
+    @WithMockPrincipal
+    @DisplayName("사용자가 자신의 개인 프로필을 조회할 경우 HTTP 상태코드 200과 UserResponse 를 반환한다.")
+    @Test
+    void getProfile() throws Exception {
+        User user = User.builder()
+                .email("email@email.com")
+                .password("Password1234!")
+                .nickname("nickname")
+                .build();
+
+        UserResponse response = UserResponse.from(user);
+
+        given(userService.findByEmail(any())).willReturn(user);
+
+        mockMvc.perform(get(USER_API_URI + "/my-profile"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(toJSON(response)));
+    }
+
 //    @DisplayName("사용자가 자신의 개인 프로필을 수정할 경우 HTTP 상태코드 200과 UserResponse 를 반환한다.")
 //    @Test
 //    void updateMyProfile() throws Exception {
-//        User loginUser = User.builder()
+//        UserUpdateRequest request = UserUpdateRequest.builder()
+//                .nickname("nickname")
+//                .build();
+//
+//        User user = User.builder()
 //                .email("email@email.com")
 //                .password("Password1234!")
 //                .nickname("nickname")
 //                .build();
 //
-//        MockHttpServletRequestBuilder requestBuilder = put(USER_API_URI)
-//                .with(principal(loginUser))
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(createUserUpdateRequestContent());
+//        UserResponse response = UserResponse.from(user);
 //
-//        mockMvc.perform(requestBuilder)
-//                .andDo(print())
+//        given(userService.updateProfile(user.getEmail(), request)).willReturn(User.builder().build());
+//
+//        mockMvc.perform(put(USER_API_URI)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(toJSON(request)))
 //                .andExpect(status().isOk())
 //                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(content().json(createUserResponseContent(loginUser)));
+//                .andExpect(content().json(toJSON(response)))
+//                .andDo(print());
 //    }
 //
 //    @DisplayName("사용자가 탈퇴할 경우 HTTP 상태코드 200을 반환한다.")

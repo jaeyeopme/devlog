@@ -61,9 +61,7 @@ public class UserController {
                                         @AuthenticationPrincipal PrincipalDetails details) {
         String email = details.getEmail();
 
-        User user = userService.updateProfile(email, request);
-
-        return UserResponse.from(user);
+        return UserResponse.from(userService.updateProfile(email, request));
     }
 
     @ResponseStatus(HttpStatus.OK)
