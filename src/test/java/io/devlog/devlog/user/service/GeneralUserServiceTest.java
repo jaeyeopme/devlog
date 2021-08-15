@@ -24,16 +24,15 @@ class GeneralUserServiceTest {
 
     @Mock
     UserRepository userRepository;
-
     @InjectMocks
     GeneralUserService userService;
 
-    private UserUpdateRequest userUpdateRequest;
+    private UserUpdateRequest updateRequest;
     private User user;
 
     @BeforeEach
     void setUp() {
-        userUpdateRequest = UserUpdateRequest.builder()
+        updateRequest = UserUpdateRequest.builder()
                 .nickname("updateNickname")
                 .build();
 
@@ -58,34 +57,34 @@ class GeneralUserServiceTest {
     @DisplayName("존재하는 사용자의 ID로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
     @Test
     void findUserByExistUserId() {
-        given(userRepository.findById(any())).willReturn(Optional.of(user));
+        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
 
-        User findUser = userService.findById(any());
+        User expectedUser = userService.findById(anyLong());
 
-        assertThat(user).isEqualTo(findUser);
-        then(userRepository).should(only()).findById(any());
+        assertThat(user).isEqualTo(expectedUser);
+        then(userRepository).should(only()).findById(anyLong());
     }
 
     @DisplayName("존재하지 않은 사용자의 ID로 사용자를 조회하는 경우 실패한다.")
     @Test
     void findUserByNonExistUserId() {
-        given(userRepository.findById(any())).willReturn(Optional.empty());
+        given(userRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(UserIdNotFoundException.class, () -> userService.findById(any()));
+        assertThrows(UserIdNotFoundException.class, () -> userService.findById(1L), "User id not found: [1]");
 
-        then(userRepository).should(only()).findById(any());
+        then(userRepository).should(only()).findById(anyLong());
     }
 
     @DisplayName("사용자의 프로필을 수정한다.")
     @Test
     void updateProfile() {
         given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
-        assertThat(user.getNickname()).isNotEqualTo(userUpdateRequest.getNickname());
+        assertThat(user.getNickname()).isNotEqualTo(updateRequest.getNickname());
 
-        User updatedProfile = userService.updateProfile(this.user.getEmail(), userUpdateRequest);
+        User updatedProfile = userService.updateProfile(this.user.getEmail(), updateRequest);
 
-        assertThat(updatedProfile.getNickname()).isEqualTo(userUpdateRequest.getNickname());
-        assertThat(this.user.getNickname()).isEqualTo(userUpdateRequest.getNickname());
+        assertThat(updatedProfile.getNickname()).isEqualTo(updateRequest.getNickname());
+        assertThat(this.user.getNickname()).isEqualTo(updateRequest.getNickname());
     }
 
     @DisplayName("사용자의 프로필을 삭제한다.")
