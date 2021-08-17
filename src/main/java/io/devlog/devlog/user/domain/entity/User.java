@@ -52,11 +52,13 @@ public class User extends BaseTimeEntity {
     private List<Comment> comments;
 
     @Builder
-    public User(String email, String password, String nickname) {
+    public User(Long id, String email, String password, String nickname, boolean enabled) {
         this.authorities = new HashSet<>();
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.enabled = enabled;
     }
 
     public static User from(UserRegisterRequest request, PasswordEncoder passwordEncoder) {
@@ -64,6 +66,7 @@ public class User extends BaseTimeEntity {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
+                .enabled(true)
                 .build();
     }
 

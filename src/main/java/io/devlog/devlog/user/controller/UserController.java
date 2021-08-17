@@ -29,8 +29,8 @@ public class UserController {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
     public void register(@Valid @RequestBody UserRegisterRequest request) {
         String email = request.getEmail();
 
@@ -41,22 +41,22 @@ public class UserController {
         emailService.sendToken(email);
     }
 
-    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
     public UserResponse search(@PathVariable Long id) {
         return UserResponse.from(userService.findById(id));
     }
 
-    @GetMapping("/my-profile")
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/my-profile")
     public UserResponse findMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
         String email = details.getEmail();
 
         return UserResponse.from(userService.findByEmail(email));
     }
 
-    @PutMapping
     @ResponseStatus(HttpStatus.OK)
+    @PutMapping
     public UserResponse updateMyProfile(@Valid @RequestBody UserUpdateRequest request,
                                         @AuthenticationPrincipal PrincipalDetails details) {
         String email = details.getEmail();
@@ -71,20 +71,20 @@ public class UserController {
             throw new UserDataDuplicationException();
     }
 
-    @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping
     public void deleteMyProfile(@AuthenticationPrincipal PrincipalDetails details) {
         userService.deleteProfileByEmail(details.getEmail());
     }
 
-    @PostMapping("/email-verification")
     @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/email-verification")
     public void sendEmailToken(@AuthenticationPrincipal PrincipalDetails details) {
         emailService.sendToken(details.getEmail());
     }
 
-    @GetMapping("/verify-token/{token}")
     @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/verify-token/{token}")
     public void verifyEmailToken(@PathVariable String token) {
         String email = emailService.getEmail(token);
 
