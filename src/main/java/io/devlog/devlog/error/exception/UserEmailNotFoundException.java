@@ -1,4 +1,4 @@
-package io.devlog.devlog.error.user;
+package io.devlog.devlog.error.exception;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserEmailNotFoundException extends RuntimeException {
 
     public UserEmailNotFoundException(String email) {
-        log.error("User email not found: [{}]", email);
+        log.error("User email not found: [\"{}\"]", email);
     }
 
 }

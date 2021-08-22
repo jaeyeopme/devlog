@@ -1,6 +1,6 @@
 package io.devlog.devlog.post.service;
 
-import io.devlog.devlog.error.post.PostNotFoundException;
+import io.devlog.devlog.error.exception.PostNotFoundException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.domain.repository.PostRepository;
 import io.devlog.devlog.post.dto.PostRequest;

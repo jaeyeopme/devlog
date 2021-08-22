@@ -1,4 +1,4 @@
-package io.devlog.devlog.error.user;
+package io.devlog.devlog.error.exception;
 
 import lombok.extern.slf4j.Slf4j;
 

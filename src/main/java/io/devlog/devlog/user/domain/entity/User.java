@@ -1,7 +1,7 @@
 package io.devlog.devlog.user.domain.entity;
 
 import io.devlog.devlog.comment.domain.entity.Comment;
-import io.devlog.devlog.common.jpa.BaseTimeEntity;
+import io.devlog.devlog.config.jpa.BaseTimeEntity;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.user.dto.UserRegisterRequest;
 import io.devlog.devlog.user.dto.UserUpdateRequest;
@@ -66,7 +66,6 @@ public class User extends BaseTimeEntity {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
-                .enabled(true)
                 .build();
     }
 

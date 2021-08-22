@@ -1,6 +1,6 @@
 package io.devlog.devlog.post.controller;
 
-import io.devlog.devlog.error.post.PostAccessDeniedException;
+import io.devlog.devlog.error.exception.PostAccessDeniedException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.dto.PostRequest;
 import io.devlog.devlog.post.dto.PostResponse;

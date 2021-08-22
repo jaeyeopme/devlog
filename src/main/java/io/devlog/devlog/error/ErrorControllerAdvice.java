@@ -1,13 +1,13 @@
 package io.devlog.devlog.error;
 
-import io.devlog.devlog.error.comment.CommentAccessDeniedException;
-import io.devlog.devlog.error.comment.CommentNotFoundException;
-import io.devlog.devlog.error.post.PostAccessDeniedException;
-import io.devlog.devlog.error.post.PostNotFoundException;
-import io.devlog.devlog.error.user.InvalidEmailTokenException;
-import io.devlog.devlog.error.user.UserDataDuplicationException;
-import io.devlog.devlog.error.user.UserEmailNotFoundException;
-import io.devlog.devlog.error.user.UserIdNotFoundException;
+import io.devlog.devlog.error.exception.CommentAccessDeniedException;
+import io.devlog.devlog.error.exception.CommentNotFoundException;
+import io.devlog.devlog.error.exception.PostAccessDeniedException;
+import io.devlog.devlog.error.exception.PostNotFoundException;
+import io.devlog.devlog.error.exception.InvalidEmailTokenException;
+import io.devlog.devlog.error.exception.UserDataDuplicationException;
+import io.devlog.devlog.error.exception.UserEmailNotFoundException;
+import io.devlog.devlog.error.exception.UserIdNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

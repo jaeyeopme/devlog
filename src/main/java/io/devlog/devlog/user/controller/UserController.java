@@ -1,8 +1,8 @@
 package io.devlog.devlog.user.controller;
 
-import io.devlog.devlog.common.email.EmailService;
-import io.devlog.devlog.error.user.InvalidEmailTokenException;
-import io.devlog.devlog.error.user.UserDataDuplicationException;
+import io.devlog.devlog.utils.EmailUtils;
+import io.devlog.devlog.error.exception.InvalidEmailTokenException;
+import io.devlog.devlog.error.exception.UserDataDuplicationException;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.dto.UserRegisterRequest;
@@ -26,7 +26,7 @@ public class UserController {
 
     public static final String USER_API_URI = "/api/users";
     private final UserService userService;
-    private final EmailService emailService;
+    private final EmailUtils emailUtils;
     private final PasswordEncoder passwordEncoder;
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -38,7 +38,7 @@ public class UserController {
             throw new UserDataDuplicationException();
 
         userService.register(User.from(request, passwordEncoder));
-        emailService.sendToken(email);
+        emailUtils.sendToken(email);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -80,15 +80,15 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/email-verification")
     public void sendEmailToken(@AuthenticationPrincipal PrincipalDetails details) {
-        emailService.sendToken(details.getEmail());
+        emailUtils.sendToken(details.getEmail());
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/verify-token/{token}")
     public void verifyEmailToken(@PathVariable String token) {
-        String email = emailService.getEmail(token);
+        String email = emailUtils.getEmail(token);
 
-        if (emailService.isInvalid(email))
+        if (emailUtils.isInvalid(email))
             throw new InvalidEmailTokenException(email);
 
         userService.setEnable(email);

@@ -4,7 +4,7 @@ import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.dto.CommentRequest;
 import io.devlog.devlog.comment.dto.CommentResponse;
 import io.devlog.devlog.comment.service.CommentService;
-import io.devlog.devlog.error.comment.CommentAccessDeniedException;
+import io.devlog.devlog.error.exception.CommentAccessDeniedException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.service.PostService;
 import io.devlog.devlog.user.domain.entity.PrincipalDetails;

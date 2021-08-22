@@ -1,4 +1,4 @@
-package io.devlog.devlog.common.redis.cache;
+package io.devlog.devlog.config.redis;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +22,8 @@ import java.util.Map;
 @Configuration
 public class CacheRedisConfig {
 
-    public static final String CACHE_REDIS_TEMPLATE_NAME = "cacheRedisTemplate";
-    public static final String CACHE_REDIS_FACTORY_NAME = "cacheRedisFactory";
+    public static final String STRING_TEMPLATE_NAME = "stringTemplate";
+    public static final String CACHE_FACTORY_NAME = "cacheRedisFactory";
 
     public static final String POST = "POST";
     public static final String COMMENT = "COMMENT";
@@ -45,7 +45,7 @@ public class CacheRedisConfig {
         this.password = password;
     }
 
-    @Bean(CACHE_REDIS_FACTORY_NAME)
+    @Bean(CACHE_FACTORY_NAME)
     public RedisConnectionFactory cacheRedisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
@@ -56,7 +56,7 @@ public class CacheRedisConfig {
 
     @Bean
     public RedisCacheManager redisCacheManager(
-            @Qualifier(value = CACHE_REDIS_FACTORY_NAME) RedisConnectionFactory redisCacheFactory) {
+            @Qualifier(value = CACHE_FACTORY_NAME) RedisConnectionFactory redisCacheFactory) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
@@ -70,9 +70,9 @@ public class CacheRedisConfig {
                 .build();
     }
 
-    @Bean(name = CACHE_REDIS_TEMPLATE_NAME)
+    @Bean(name = STRING_TEMPLATE_NAME)
     public StringRedisTemplate cacheRedisTemplate(
-            @Qualifier(value = CACHE_REDIS_FACTORY_NAME) RedisConnectionFactory redisCacheFactory) {
+            @Qualifier(value = CACHE_FACTORY_NAME) RedisConnectionFactory redisCacheFactory) {
         return new StringRedisTemplate(redisCacheFactory);
     }
 

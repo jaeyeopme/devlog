@@ -1,4 +1,4 @@
-package io.devlog.devlog.common.jpa;
+package io.devlog.devlog.config.jpa;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

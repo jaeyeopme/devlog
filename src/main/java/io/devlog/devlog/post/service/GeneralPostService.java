@@ -1,6 +1,6 @@
 package io.devlog.devlog.post.service;
 
-import io.devlog.devlog.error.post.PostNotFoundException;
+import io.devlog.devlog.error.exception.PostNotFoundException;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.post.domain.repository.PostRepository;
 import io.devlog.devlog.post.dto.PostRequest;
@@ -11,7 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.devlog.devlog.common.redis.cache.CacheRedisConfig.POST;
+import static io.devlog.devlog.config.redis.CacheRedisConfig.POST;
 
 @RequiredArgsConstructor
 @Service

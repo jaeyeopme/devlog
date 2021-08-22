@@ -1,4 +1,4 @@
-package io.devlog.devlog.error.post;
+package io.devlog.devlog.error.exception;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PostNotFoundException extends RuntimeException {
 
     public PostNotFoundException(Long id) {
-        log.error("Post id not found: [{}]", id);
+        log.error("Post id not found: [\"{}\"]", id);
     }
 
 }

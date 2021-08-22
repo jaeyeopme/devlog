@@ -1,7 +1,7 @@
 package io.devlog.devlog.user.service;
 
-import io.devlog.devlog.error.user.UserEmailNotFoundException;
-import io.devlog.devlog.error.user.UserIdNotFoundException;
+import io.devlog.devlog.error.exception.UserEmailNotFoundException;
+import io.devlog.devlog.error.exception.UserIdNotFoundException;
 import io.devlog.devlog.user.domain.entity.Authority;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.domain.repository.UserRepository;

@@ -2,12 +2,11 @@ package io.devlog.devlog.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.devlog.devlog.common.email.EmailService;
-import io.devlog.devlog.common.fixture.UserFixture;
+import io.devlog.devlog.utils.EmailUtils;
+import io.devlog.devlog.fixture.UserFixture;
 import io.devlog.devlog.common.security.WithMockPrincipal;
-import io.devlog.devlog.error.user.InvalidEmailTokenException;
-import io.devlog.devlog.error.user.UserIdNotFoundException;
-import io.devlog.devlog.user.dto.UserUpdateRequest;
+import io.devlog.devlog.error.exception.InvalidEmailTokenException;
+import io.devlog.devlog.error.exception.UserIdNotFoundException;
 import io.devlog.devlog.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,7 @@ class UserControllerTest {
     @MockBean
     UserService userService;
     @MockBean
-    EmailService emailService;
+    EmailUtils emailUtils;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -160,8 +159,8 @@ class UserControllerTest {
     @DisplayName("유효한 이메일 토큰일 경우 HTTP 상태코드 200을 반환한다.")
     @Test
     void verifyValidEmailToken() throws Exception {
-        given(emailService.getEmail(any())).willReturn(UserFixture.EMAIL);
-        given(emailService.isInvalid(any())).willReturn(false);
+        given(emailUtils.getEmail(any())).willReturn(UserFixture.EMAIL);
+        given(emailUtils.isInvalid(any())).willReturn(false);
 
         mockMvc.perform(get(USER_API_URI + "/verify-token/{token}", UserFixture.EMAIL_TOKEN))
                 .andDo(print())
@@ -171,7 +170,7 @@ class UserControllerTest {
     @DisplayName("유효하지 않은 이메일 토큰일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void verifyInValidEmailToken() throws Exception {
-        given(emailService.getEmail(any())).willThrow(new InvalidEmailTokenException(UserFixture.EMAIL_TOKEN));
+        given(emailUtils.getEmail(any())).willThrow(new InvalidEmailTokenException(UserFixture.EMAIL_TOKEN));
 
         mockMvc.perform(get(USER_API_URI + "/verify-token/{token}", UserFixture.EMAIL_TOKEN))
                 .andDo(print())
@@ -182,8 +181,8 @@ class UserControllerTest {
     @DisplayName("유효한 이메일 토큰이지만 유효하지 않은 이메일일 경우 HTTP 상태코드 401과 메시지를 반환한다.")
     @Test
     void verifyValidEmailTokenAndInvalidEmail() throws Exception {
-        given(emailService.getEmail(any())).willReturn(UserFixture.EMAIL);
-        given(emailService.isInvalid(any())).willReturn(true);
+        given(emailUtils.getEmail(any())).willReturn(UserFixture.EMAIL);
+        given(emailUtils.isInvalid(any())).willReturn(true);
 
         mockMvc.perform(get(USER_API_URI + "/verify-token/{token}", UserFixture.EMAIL_TOKEN))
                 .andDo(print())

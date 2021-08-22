@@ -3,7 +3,7 @@ package io.devlog.devlog.comment.service;
 import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.domain.repository.CommentRepository;
 import io.devlog.devlog.comment.dto.CommentRequest;
-import io.devlog.devlog.error.comment.CommentNotFoundException;
+import io.devlog.devlog.error.exception.CommentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -11,7 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.devlog.devlog.common.redis.cache.CacheRedisConfig.COMMENT;
+import static io.devlog.devlog.config.redis.CacheRedisConfig.COMMENT;
 
 @RequiredArgsConstructor
 @Service

@@ -1,27 +1,27 @@
-package io.devlog.devlog.common.email;
+package io.devlog.devlog.utils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service
-public class EmailService {
+@Component
+public class EmailUtils {
 
     private static final String VERIFICATION_TITLE = "Devlog 인증번호 안내";
     private static final String DOMAIN_NAME = "http://localhost:8080";
     private static final String EMAIL_CONFIRM_URL = "/api/users/verify-token";
     private static final long EMAIL_TOKEN_EXPIRE_TIME = 180L;
 
-    private final RedisService redisService;
-    private final JavaMailSender javaMailSender;
+    private final RedisUtils redisUtils;
+    private final JavaMailSender sender;
 
     public void sendToken(String email) {
         String token = generateEmailToken(email);
@@ -32,15 +32,15 @@ public class EmailService {
         message.setTo(email);
 
         try {
-            javaMailSender.send(message);
+            sender.send(message);
         } catch (MailException e) {
-            deleteToken(token);
-            log.warn("Failed to send email to: '{}' when: '{}' reason: {}", email, new Date(), e.toString());
+            redisUtils.delete(token);
+            log.error("Failed to send email to: '{}' when: '{}' reason: {}", email, new Date(), e.toString());
         }
     }
 
     public String getEmail(String token) {
-        return redisService.get(token);
+        return redisUtils.get(token);
     }
 
     public boolean isInvalid(String email) {
@@ -56,13 +56,9 @@ public class EmailService {
 
     private String generateEmailToken(String email) {
         String token = String.valueOf(UUID.randomUUID());
-        redisService.set(token, email, EMAIL_TOKEN_EXPIRE_TIME);
+        redisUtils.set(token, email, EMAIL_TOKEN_EXPIRE_TIME);
 
         return token;
-    }
-
-    private void deleteToken(String token) {
-        redisService.deleteToken(token);
     }
 
 }

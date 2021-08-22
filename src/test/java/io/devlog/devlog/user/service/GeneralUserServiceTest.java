@@ -1,11 +1,10 @@
 package io.devlog.devlog.user.service;
 
-import io.devlog.devlog.error.user.UserEmailNotFoundException;
-import io.devlog.devlog.error.user.UserIdNotFoundException;
+import io.devlog.devlog.error.exception.UserEmailNotFoundException;
+import io.devlog.devlog.error.exception.UserIdNotFoundException;
+import io.devlog.devlog.fixture.UserFixture;
 import io.devlog.devlog.user.domain.entity.User;
 import io.devlog.devlog.user.domain.repository.UserRepository;
-import io.devlog.devlog.user.dto.UserUpdateRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,64 +26,47 @@ class GeneralUserServiceTest {
     @InjectMocks
     GeneralUserService userService;
 
-    private UserUpdateRequest updateRequest;
-    private User user;
-
-    @BeforeEach
-    void setUp() {
-        updateRequest = UserUpdateRequest.builder()
-                .nickname("updateNickname")
-                .build();
-
-        user = User.builder()
-                .email("email@email.com")
-                .password("Password1234!")
-                .nickname("nickname")
-                .build();
-    }
-
-    @DisplayName("회원가입에 성공한다.")
+    @DisplayName("회원가입에 성공한다면 사용자는 USER 권한을 가지고 있는다.")
     @Test
     void register() {
-        assertTrue(user.getAuthorities().isEmpty());
+        assertTrue(UserFixture.USER.getAuthorities().isEmpty());
 
-        userService.register(user);
+        userService.register(UserFixture.USER);
 
-        assertFalse(user.getAuthorities().isEmpty());
+        assertFalse(UserFixture.USER.getAuthorities().isEmpty());
         then(userRepository).should(only()).save(any());
     }
 
     @DisplayName("존재하는 사용자의 ID로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
     @Test
     void findUserByExistUserId() {
-        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+        given(userRepository.findById(any())).willReturn(Optional.of(UserFixture.USER));
 
-        User expectedUser = userService.findById(anyLong());
+        User expectedUser = userService.findById(any());
 
-        assertThat(user).isEqualTo(expectedUser);
-        then(userRepository).should(only()).findById(anyLong());
+        assertThat(UserFixture.USER).isEqualTo(expectedUser);
+        then(userRepository).should(only()).findById(any());
     }
 
-    @DisplayName("존재하지 않은 사용자의 ID로 사용자를 조회하는 경우 실패한다.")
+    @DisplayName("존재하지 않은 사용자의 ID로 사용자를 조회하는 경우 UserIdNotFoundException 이 발생한다.")
     @Test
     void findUserByNonExistUserId() {
-        given(userRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(userRepository.findById(any())).willReturn(Optional.empty());
 
-        assertThrows(UserIdNotFoundException.class, () -> userService.findById(1L), "User id not found: [1]");
+        assertThrows(UserIdNotFoundException.class,
+                () -> userService.findById(UserFixture.ID), String.format("User id not found: [\"%s\"]", UserFixture.ID));
 
-        then(userRepository).should(only()).findById(anyLong());
+        then(userRepository).should(only()).findById(any());
     }
 
     @DisplayName("사용자의 프로필을 수정한다.")
     @Test
     void updateProfile() {
-        given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
-        assertThat(user.getNickname()).isNotEqualTo(updateRequest.getNickname());
+        given(userRepository.findByEmail(any())).willReturn(Optional.of(UserFixture.USER));
 
-        User updatedProfile = userService.updateProfile(this.user.getEmail(), updateRequest);
+        User updatedProfile = userService.updateProfile(UserFixture.EMAIL, UserFixture.UPDATE_REQUEST);
 
-        assertThat(updatedProfile.getNickname()).isEqualTo(updateRequest.getNickname());
-        assertThat(this.user.getNickname()).isEqualTo(updateRequest.getNickname());
+        assertThat(updatedProfile.getNickname()).isEqualTo(UserFixture.UPDATE_NICKNAME);
     }
 
     @DisplayName("사용자의 프로필을 삭제한다.")
@@ -122,20 +104,21 @@ class GeneralUserServiceTest {
     @DisplayName("존재하는 사용자의 이메일로 사용자를 조회하는 경우 조회된 사용자를 반환한다.")
     @Test
     void findUserWithExistEmail() {
-        given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
+        given(userRepository.findByEmail(any())).willReturn(Optional.of(UserFixture.USER));
 
-        User findUser = userService.findByEmail(any());
+        User expectedUser = userService.findByEmail(any());
 
-        assertThat(user).isEqualTo(findUser);
+        assertThat(UserFixture.USER).isEqualTo(expectedUser);
         then(userRepository).should(only()).findByEmail(any());
     }
 
     @DisplayName("존재하지 않는 사용자의 이메일로 사용자를 조회하는 경우 HTTP 상태코드 404와 메시지를 반환한다.")
     @Test
     void findUserByNonExistEmail() {
-        given(userRepository.findByEmail(any())).willReturn(Optional.empty());
+        given(userRepository.findByEmail(UserFixture.EMAIL)).willReturn(Optional.empty());
 
-        assertThrows(UserEmailNotFoundException.class, () -> userService.findByEmail(any()));
+        assertThrows(UserEmailNotFoundException.class,
+                () -> userService.findByEmail(UserFixture.EMAIL), String.format("User email not found: [\"%s\"]", UserFixture.EMAIL));
 
         then(userRepository).should(only()).findByEmail(any());
     }
@@ -143,13 +126,13 @@ class GeneralUserServiceTest {
     @DisplayName("사용자가 활성화된다.")
     @Test
     void setEnabled() {
-        given(userRepository.findByEmail(any())).willReturn(Optional.of(user));
-        assertFalse(user.isEnabled());
+        given(userRepository.findByEmail(any())).willReturn(Optional.of(UserFixture.USER));
+        assertFalse(UserFixture.USER.isEnabled());
 
-        userService.setEnable(user.getEmail());
+        userService.setEnable(UserFixture.EMAIL);
 
+        assertTrue(UserFixture.USER.isEnabled());
         then(userRepository).should(only()).findByEmail(any());
-        assertTrue(user.isEnabled());
     }
 
 }

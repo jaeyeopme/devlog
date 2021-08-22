@@ -1,7 +1,7 @@
 package io.devlog.devlog.comment.domain.entity;
 
 import io.devlog.devlog.comment.dto.CommentRequest;
-import io.devlog.devlog.common.jpa.BaseTimeEntity;
+import io.devlog.devlog.config.jpa.BaseTimeEntity;
 import io.devlog.devlog.post.domain.entity.Post;
 import io.devlog.devlog.user.domain.entity.User;
 import lombok.AccessLevel;
@@ -22,11 +22,11 @@ public class Comment extends BaseTimeEntity {
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = Post.class)
     @JoinColumn(nullable = false)
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = User.class)
     @JoinColumn(nullable = false)
     private User author;
 

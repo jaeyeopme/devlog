@@ -3,7 +3,7 @@ package io.devlog.devlog.comment.service;
 import io.devlog.devlog.comment.domain.entity.Comment;
 import io.devlog.devlog.comment.domain.repository.CommentRepository;
 import io.devlog.devlog.comment.dto.CommentRequest;
-import io.devlog.devlog.error.comment.CommentNotFoundException;
+import io.devlog.devlog.error.exception.CommentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
