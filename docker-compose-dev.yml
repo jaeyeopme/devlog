@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   database:
-    image: mariadb:10.5.3
+    image: mariadb:10.5.9
     container_name: mariadb-container
     environment:
       MYSQL_HOST: localhost
@@ -21,7 +21,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
 
   session:
-    image: redis:6.2.4-alpine
+    image: redis:6.2.5-alpine
     container_name: session-container
     ports:
       - "6379:6379"
@@ -29,7 +29,7 @@ services:
       - --requirepass session-password
 
   cache:
-    image: redis:6.2.4-alpine
+    image: redis:6.2.5-alpine
     container_name: cache-container
     ports:
       - "6380:6379"

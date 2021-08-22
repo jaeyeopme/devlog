@@ -13,7 +13,7 @@ services:
       - cache
 
   session:
-    image: redis:6.2.4-alpine
+    image: redis:6.2.5-alpine
     container_name: session-container
     env_file: .env
     ports:
@@ -22,7 +22,7 @@ services:
       - --requirepass ${REDIS_SESSION_PASSWORD}
 
   cache:
-    image: redis:6.2.4-alpine
+    image: redis:6.2.5-alpine
     container_name: cache-container
     env_file: .env
     ports:
