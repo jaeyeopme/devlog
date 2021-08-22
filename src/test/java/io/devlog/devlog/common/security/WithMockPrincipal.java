@@ -1,6 +1,6 @@
 package io.devlog.devlog.common.security;
 
-import io.devlog.devlog.common.fixture.UserFixture;
+import io.devlog.devlog.fixture.UserFixture;
 import io.devlog.devlog.user.domain.entity.Authority;
 import org.springframework.security.test.context.support.WithSecurityContext;
 
